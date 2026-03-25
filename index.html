@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MEEP — Microsoft Employee Experience Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #181c24;
+    --border: #1e2330;
+    --border2: #252c3a;
+    --accent: #00a8ff;
+    --accent2: #0068d6;
+    --accent-glow: rgba(0,168,255,0.18);
+    --green: #22c55e;
+    --yellow: #f59e0b;
+    --red: #ef4444;
+    --purple: #a855f7;
+    --text: #e8eaf0;
+    --text2: #8892a4;
+    --text3: #4a5568;
+    --sidebar-w: 240px;
+    --header-h: 60px;
+    --font: 'Sora', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--sidebar-w);
+    height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    transition: transform 0.3s;
+  }
+  .sidebar-logo {
+    padding: 0 20px;
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ms-icon {
+    width: 28px; height: 28px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+    flex-shrink: 0;
+  }
+  .ms-icon span { border-radius: 1px; }
+  .ms-icon span:nth-child(1) { background: #f25022; }
+  .ms-icon span:nth-child(2) { background: #7fba00; }
+  .ms-icon span:nth-child(3) { background: #00a4ef; }
+  .ms-icon span:nth-child(4) { background: #ffb900; }
+  .sidebar-logo-text {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .sidebar-logo-text span {
+    display: block;
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 0;
+  }
+  .nav-section {
+    padding: 8px 16px 4px;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px;
+    cursor: pointer;
+    border-radius: 0;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text2);
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+    user-select: none;
+    position: relative;
+  }
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+  .nav-item.active {
+    color: var(--accent);
+    background: rgba(0,168,255,0.08);
+    border-left-color: var(--accent);
+    font-weight: 500;
+  }
+  .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .nav-badge {
+    margin-left: auto;
+    background: var(--accent2);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 20px;
+    font-family: var(--mono);
+  }
+  .nav-badge.red { background: var(--red); }
+  .nav-badge.green { background: var(--green); }
+
+  .sidebar-user {
+    padding: 14px 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .user-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent2), var(--purple));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 12px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-role { font-size: 10px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-status {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    flex-shrink: 0;
+  }
+
+  /* MAIN */
+  .main {
+    margin-left: var(--sidebar-w);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* TOPBAR */
+  .topbar {
+    position: sticky; top: 0;
+    height: var(--header-h);
+    background: rgba(10,12,16,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+    gap: 16px;
+    z-index: 50;
+  }
+  .topbar-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    flex: 1;
+  }
+  .topbar-title span {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text2);
+    margin-left: 6px;
+  }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .topbar-badge {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--accent);
+    background: var(--accent-glow);
+    border: 1px solid rgba(0,168,255,0.2);
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .topbar-time {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--text2);
+  }
+  .icon-btn {
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    border: 1px solid var(--border2);
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .icon-btn:hover { border-color: var(--accent); background: var(--accent-glow); }
+  .icon-btn svg { width: 15px; height: 15px; color: var(--text2); }
+  .notif-dot {
+    position: absolute; top: 5px; right: 5px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+    border: 1px solid var(--bg);
+  }
+
+  /* PAGE CONTENT */
+  .page { display: none; padding: 28px; flex-direction: column; gap: 24px; }
+  .page.active { display: flex; }
+
+  /* STAT GRID */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+    cursor: default;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .stat-card.blue::before { background: var(--accent); }
+  .stat-card.green::before { background: var(--green); }
+  .stat-card.yellow::before { background: var(--yellow); }
+  .stat-card.purple::before { background: var(--purple); }
+  .stat-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+  .stat-label { font-size: 11px; color: var(--text2); font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 10px; }
+  .stat-value { font-size: 28px; font-weight: 700; font-family: var(--mono); color: var(--text); line-height: 1; }
+  .stat-sub { font-size: 11px; color: var(--text2); margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+  .stat-delta { font-size: 10px; font-weight: 600; padding: 1px 5px; border-radius: 3px; }
+  .stat-delta.up { background: rgba(34,197,94,0.15); color: var(--green); }
+  .stat-delta.down { background: rgba(239,68,68,0.15); color: var(--red); }
+  .stat-icon {
+    position: absolute; right: 16px; top: 16px;
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0.15;
+  }
+  .stat-icon svg { width: 22px; height: 22px; }
+  .stat-card.blue .stat-icon { background: var(--accent); }
+  .stat-card.green .stat-icon { background: var(--green); }
+  .stat-card.yellow .stat-icon { background: var(--yellow); }
+  .stat-card.purple .stat-icon { background: var(--purple); }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
+  }
+  .section-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .section-sub { font-size: 11px; color: var(--text2); margin-top: 1px; }
+  .section-action {
+    font-size: 11px; color: var(--accent); cursor: pointer;
+    background: none; border: none; font-family: var(--font);
+    display: flex; align-items: center; gap: 4px;
+  }
+  .section-action:hover { text-decoration: underline; }
+
+  /* TWO COLUMNS */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .three-col { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+
+  /* ATTENDANCE TABLE */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    padding: 8px 12px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    white-space: nowrap;
+  }
+  tbody td {
+    padding: 11px 12px;
+    font-size: 12px;
+    color: var(--text2);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: rgba(255,255,255,0.02); color: var(--text); }
+  .emp-cell { display: flex; align-items: center; gap: 9px; }
+  .emp-av {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .emp-av.a { background: linear-gradient(135deg,#00a8ff,#0068d6); }
+  .emp-av.b { background: linear-gradient(135deg,#a855f7,#7c3aed); }
+  .emp-av.c { background: linear-gradient(135deg,#22c55e,#16a34a); }
+  .emp-av.d { background: linear-gradient(135deg,#f59e0b,#d97706); }
+  .emp-av.e { background: linear-gradient(135deg,#ef4444,#dc2626); }
+  .emp-name { font-size: 12px; font-weight: 500; color: var(--text); }
+  .emp-id { font-size: 10px; color: var(--text3); font-family: var(--mono); }
+
+  /* PILL / STATUS */
+  .pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600;
+  }
+  .pill::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
+  .pill.present { background: rgba(34,197,94,0.12); color: var(--green); }
+  .pill.present::before { background: var(--green); }
+  .pill.absent { background: rgba(239,68,68,0.12); color: var(--red); }
+  .pill.absent::before { background: var(--red); }
+  .pill.wfh { background: rgba(168,85,247,0.12); color: var(--purple); }
+  .pill.wfh::before { background: var(--purple); }
+  .pill.leave { background: rgba(245,158,11,0.12); color: var(--yellow); }
+  .pill.leave::before { background: var(--yellow); }
+
+  /* LOCATION TAGS */
+  .loc-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; color: var(--text3); font-family: var(--mono);
+  }
+  .loc-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  /* APPROVAL QUEUE */
+  .approval-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .approval-item:last-child { border-bottom: none; }
+  .approval-info { flex: 1; }
+  .approval-name { font-size: 12px; font-weight: 500; color: var(--text); }
+  .approval-desc { font-size: 11px; color: var(--text2); margin-top: 2px; }
+  .approval-meta { font-size: 10px; color: var(--text3); margin-top: 2px; font-family: var(--mono); }
+  .approval-actions { display: flex; gap: 6px; }
+  .btn-approve, .btn-decline {
+    font-size: 11px; font-family: var(--font); font-weight: 500;
+    padding: 5px 12px; border-radius: 5px; border: none; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-approve { background: rgba(34,197,94,0.15); color: var(--green); }
+  .btn-approve:hover { background: rgba(34,197,94,0.28); }
+  .btn-decline { background: rgba(239,68,68,0.12); color: var(--red); }
+  .btn-decline:hover { background: rgba(239,68,68,0.24); }
+
+  /* ORG CHART */
+  .org-tree {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 0;
+    padding: 10px 0;
+  }
+  .org-node {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; border-radius: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    margin: 4px 0;
+    font-size: 12px; font-weight: 500; color: var(--text);
+    transition: all 0.15s; cursor: default;
+    min-width: 200px;
+  }
+  .org-node:hover { border-color: var(--accent); }
+  .org-node.root { background: rgba(0,168,255,0.1); border-color: rgba(0,168,255,0.3); color: var(--accent); }
+  .org-node svg { width: 14px; height: 14px; color: var(--text2); }
+  .org-level { margin-left: 28px; }
+  .org-line { width: 1px; background: var(--border); height: 8px; margin-left: 24px; }
+
+  /* REGION MAP STRIP */
+  .region-strip { display: flex; gap: 10px; flex-wrap: wrap; }
+  .region-card {
+    flex: 1; min-width: 110px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .region-card:hover { border-color: var(--accent); }
+  .region-card.active-region { border-color: var(--accent); background: var(--accent-glow); }
+  .region-flag { font-size: 20px; margin-bottom: 6px; }
+  .region-name { font-size: 12px; font-weight: 600; color: var(--text); }
+  .region-count { font-size: 11px; color: var(--text2); font-family: var(--mono); }
+  .region-tz { font-size: 9px; color: var(--text3); margin-top: 2px; }
+
+  /* TIMELINE BAR */
+  .bar-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .bar-row:last-child { border-bottom: none; }
+  .bar-label { width: 90px; color: var(--text2); flex-shrink: 0; font-size: 11px; }
+  .bar-track { flex: 1; height: 6px; background: var(--border2); border-radius: 3px; position: relative; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+  .bar-fill.blue { background: var(--accent); }
+  .bar-fill.green { background: var(--green); }
+  .bar-fill.yellow { background: var(--yellow); }
+  .bar-fill.purple { background: var(--purple); }
+  .bar-fill.red { background: var(--red); }
+  .bar-val { width: 40px; text-align: right; font-family: var(--mono); font-size: 11px; color: var(--text2); }
+
+  /* PAYROLL CARDS */
+  .payroll-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 11px 0; border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .payroll-row:last-child { border-bottom: none; }
+  .payroll-region { display: flex; align-items: center; gap: 8px; color: var(--text); font-weight: 500; }
+  .payroll-flag { font-size: 16px; }
+  .payroll-currency { font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--accent); }
+  .payroll-sub { font-size: 10px; color: var(--text3); }
+
+  /* NOTIFICATION ITEMS */
+  .notif-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 11px 0; border-bottom: 1px solid var(--border);
+  }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-dot-lg {
+    width: 8px; height: 8px; border-radius: 50%;
+    flex-shrink: 0; margin-top: 4px;
+  }
+  .notif-text { font-size: 12px; color: var(--text); flex: 1; }
+  .notif-text span { color: var(--text2); font-size: 11px; display: block; margin-top: 2px; }
+  .notif-tz { font-size: 10px; color: var(--text3); font-family: var(--mono); white-space: nowrap; }
+
+  /* SECURITY LOG */
+  .log-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .log-item:last-child { border-bottom: none; }
+  .log-icon {
+    width: 30px; height: 30px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .log-icon svg { width: 14px; height: 14px; }
+  .log-icon.ok { background: rgba(34,197,94,0.12); color: var(--green); }
+  .log-icon.warn { background: rgba(245,158,11,0.12); color: var(--yellow); }
+  .log-icon.err { background: rgba(239,68,68,0.12); color: var(--red); }
+  .log-info { flex: 1; }
+  .log-label { color: var(--text); font-weight: 500; }
+  .log-sub { color: var(--text2); font-size: 11px; font-family: var(--mono); }
+  .log-time { font-size: 10px; color: var(--text3); font-family: var(--mono); }
+
+  /* COMPLIANCE PROGRESS */
+  .compliance-row { margin-bottom: 14px; }
+  .compliance-header { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
+  .compliance-name { color: var(--text); font-weight: 500; }
+  .compliance-pct { font-family: var(--mono); font-size: 12px; color: var(--text2); }
+  .compliance-bar { height: 4px; background: var(--border2); border-radius: 2px; }
+  .compliance-fill { height: 100%; border-radius: 2px; }
+
+  /* SEARCH */
+  .search-bar {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 8px 14px;
+    margin-bottom: 16px;
+  }
+  .search-bar input {
+    flex: 1; background: none; border: none; outline: none;
+    font-family: var(--font); font-size: 13px; color: var(--text);
+  }
+  .search-bar input::placeholder { color: var(--text3); }
+  .search-bar svg { width: 15px; height: 15px; color: var(--text3); flex-shrink: 0; }
+
+  /* INTEGRATION TILES */
+  .integration-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+  .integration-tile {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .integration-tile:hover { border-color: var(--accent); }
+  .int-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .int-name { font-size: 12px; font-weight: 600; color: var(--text); }
+  .int-status { font-size: 10px; margin-top: 1px; }
+  .int-status.ok { color: var(--green); }
+  .int-status.warn { color: var(--yellow); }
+
+  /* PROFILE PAGE */
+  .profile-hero {
+    background: linear-gradient(135deg, rgba(0,168,255,0.12), rgba(168,85,247,0.08));
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    display: flex; align-items: center; gap: 24px;
+  }
+  .profile-av {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent2), var(--purple));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+    border: 3px solid rgba(0,168,255,0.3);
+  }
+  .profile-name { font-size: 22px; font-weight: 700; color: var(--text); }
+  .profile-role { font-size: 13px; color: var(--accent); font-weight: 500; margin-top: 2px; }
+  .profile-id { font-size: 11px; color: var(--text3); font-family: var(--mono); margin-top: 4px; }
+  .profile-tags { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .profile-tag {
+    font-size: 10px; font-weight: 500;
+    padding: 3px 10px; border-radius: 20px;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text2);
+  }
+  .profile-actions { margin-left: auto; display: flex; gap: 8px; }
+  .btn-primary {
+    background: var(--accent2); color: #fff;
+    border: none; border-radius: 6px;
+    padding: 8px 16px; font-size: 12px; font-weight: 600;
+    font-family: var(--font); cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-primary:hover { background: #0079f2; }
+  .btn-secondary {
+    background: var(--surface2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 8px 16px; font-size: 12px; font-weight: 500;
+    font-family: var(--font); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  .info-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+  .info-item { }
+  .info-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; margin-bottom: 4px; }
+  .info-value { font-size: 13px; color: var(--text); font-weight: 500; }
+
+  /* LEAVE PAGE */
+  .leave-balance-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 16px; }
+  .leave-bal {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 14px; text-align: center;
+  }
+  .leave-bal-num { font-size: 28px; font-weight: 700; font-family: var(--mono); }
+  .leave-bal-type { font-size: 11px; color: var(--text2); margin-top: 4px; }
+  .leave-form {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    margin-top: 16px;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-size: 11px; color: var(--text2); font-weight: 500; }
+  .form-input {
+    background: var(--surface2); border: 1px solid var(--border2);
+    border-radius: 6px; padding: 8px 12px;
+    font-size: 13px; color: var(--text); font-family: var(--font);
+    outline: none; transition: border-color 0.15s;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  .form-input option { background: var(--surface); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  /* LIVE CLOCK */
+  #clock { font-family: var(--mono); font-size: 11px; color: var(--text2); }
+
+  /* ANIMATE */
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  .page.active { animation: fadeIn 0.25s ease; }
+
+  /* METRIC TREND */
+  .mini-chart { display: flex; align-items: flex-end; gap: 3px; height: 32px; }
+  .mini-bar {
+    width: 8px; border-radius: 2px 2px 0 0;
+    background: rgba(0,168,255,0.35);
+    transition: background 0.15s;
+  }
+  .mini-bar:last-child { background: var(--accent); }
+  .mini-bar:hover { background: var(--accent); }
+
+  /* RESPONSIVE HELPERS */
+  @media (max-width: 1200px) {
+    .stat-grid { grid-template-columns: repeat(2,1fr); }
+    .three-col { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="ms-icon">
+      <span></span><span></span><span></span><span></span>
+    </div>
+    <div class="sidebar-logo-text">
+      Microsoft
+      <span>MEEP v2.0</span>
+    </div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" onclick="showPage('dashboard', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('profile', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      My Profile
+    </div>
+
+    <div class="nav-section">Workforce</div>
+    <div class="nav-item" onclick="showPage('employees', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Employees
+      <span class="nav-badge">10,234</span>
+    </div>
+    <div class="nav-item" onclick="showPage('org', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="4" r="2"/><line x1="12" y1="6" x2="12" y2="10"/><circle cx="4" cy="14" r="2"/><circle cx="12" cy="14" r="2"/><circle cx="20" cy="14" r="2"/><line x1="12" y1="10" x2="4" y2="12"/><line x1="12" y1="10" x2="12" y2="12"/><line x1="12" y1="10" x2="20" y2="12"/></svg>
+      Org Chart
+    </div>
+    <div class="nav-item" onclick="showPage('regions', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      Regions
+    </div>
+
+    <div class="nav-section">Operations</div>
+    <div class="nav-item" onclick="showPage('attendance', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Attendance
+    </div>
+    <div class="nav-item" onclick="showPage('leave', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Leave
+      <span class="nav-badge red">7</span>
+    </div>
+    <div class="nav-item" onclick="showPage('payroll', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6"/></svg>
+      Payroll
+    </div>
+
+    <div class="nav-section">System</div>
+    <div class="nav-item" onclick="showPage('security', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Security
+    </div>
+    <div class="nav-item" onclick="showPage('integrations', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      Integrations
+    </div>
+    <div class="nav-item" onclick="showPage('reports', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Reports
+    </div>
+  </div>
+  <div class="sidebar-user">
+    <div class="user-avatar">VK</div>
+    <div class="user-info">
+      <div class="user-name">Vivek Katuri</div>
+      <div class="user-role">Cloud Architect · ATL</div>
+    </div>
+    <div class="user-status"></div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">
+      Dashboard <span>Good morning, Vivek 👋</span>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-badge">IST <span id="clock"></span></div>
+      <div class="icon-btn" title="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="notif-dot"></div>
+      </div>
+      <div class="icon-btn" title="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ DASHBOARD PAGE ════════════════ -->
+  <div class="page active" id="page-dashboard">
+
+    <!-- STAT CARDS -->
+    <div class="stat-grid">
+      <div class="stat-card blue">
+        <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="stat-label">Total Employees</div>
+        <div class="stat-value">10,234</div>
+        <div class="stat-sub"><span class="stat-delta up">↑ 2.4%</span> vs last quarter</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="stat-label">Present Today</div>
+        <div class="stat-value">8,741</div>
+        <div class="stat-sub"><span class="stat-delta up">85.4%</span> attendance rate</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-icon yellow"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        <div class="stat-label">Pending Approvals</div>
+        <div class="stat-value">47</div>
+        <div class="stat-sub"><span class="stat-delta down">↑ 12</span> since yesterday</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-icon purple"><svg viewBox="0 0 24 24" fill="currentColor"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div class="stat-label">Monthly Payroll</div>
+        <div class="stat-value">₹8.2Cr</div>
+        <div class="stat-sub"><span class="stat-delta up">+USD 1.1M</span> cross-region</div>
+      </div>
+    </div>
+
+    <!-- ROW 2 -->
+    <div class="two-col">
+      <!-- ATTENDANCE TABLE -->
+      <div class="card">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Team Attendance — Hyderabad</div>
+            <div class="section-sub">Today · IST Timezone</div>
+          </div>
+          <button class="section-action">View all →</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Location</th>
+                <th>Check-In</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><div class="emp-cell"><div class="emp-av a">VK</div><div><div class="emp-name">Vivek Katuri</div><div class="emp-id">MS-IND-HYD-10234</div></div></div></td><td><span class="loc-tag"><span class="loc-dot"></span>HYD</span></td><td style="font-family:var(--mono);font-size:11px;">09:04 AM</td><td><span class="pill present">Present</span></td></tr>
+              <tr><td><div class="emp-cell"><div class="emp-av b">PR</div><div><div class="emp-name">Priya Reddy</div><div class="emp-id">MS-IND-HYD-10891</div></div></div></td><td><span class="loc-tag"><span class="loc-dot"></span>HYD</span></td><td style="font-family:var(--mono);font-size:11px;">08:58 AM</td><td><span class="pill present">Present</span></td></tr>
+              <tr><td><div class="emp-cell"><div class="emp-av c">AM</div><div><div class="emp-name">Arjun Mehta</div><div class="emp-id">MS-IND-BLR-10345</div></div></div></td><td><span class="loc-tag"><span class="loc-dot" style="background:var(--yellow)"></span>BLR</span></td><td style="font-family:var(--mono);font-size:11px;">09:22 AM</td><td><span class="pill wfh">WFH</span></td></tr>
+              <tr><td><div class="emp-cell"><div class="emp-av d">SK</div><div><div class="emp-name">Sarah Khan</div><div class="emp-id">MS-UK-LON-20123</div></div></div></td><td><span class="loc-tag"><span class="loc-dot" style="background:var(--purple)"></span>LON</span></td><td style="font-family:var(--mono);font-size:11px;">—</td><td><span class="pill leave">On Leave</span></td></tr>
+              <tr><td><div class="emp-cell"><div class="emp-av e">MT</div><div><div class="emp-name">Mike Torres</div><div class="emp-id">MS-US-RED-30012</div></div></div></td><td><span class="loc-tag"><span class="loc-dot" style="background:var(--green)"></span>RED</span></td><td style="font-family:var(--mono);font-size:11px;">—</td><td><span class="pill absent">Absent</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- APPROVALS -->
+      <div class="card">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Pending Approvals</div>
+            <div class="section-sub">Your queue as Team Lead</div>
+          </div>
+          <button class="section-action">See all 47 →</button>
+        </div>
+        <div class="approval-item">
+          <div class="emp-av b" style="width:34px;height:34px;font-size:12px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;">PR</div>
+          <div class="approval-info">
+            <div class="approval-name">Priya Reddy</div>
+            <div class="approval-desc">Earned Leave · 3 days</div>
+            <div class="approval-meta">Mar 28 – Mar 30 · HYD Team</div>
+          </div>
+          <div class="approval-actions">
+            <button class="btn-approve" onclick="approveItem(this)">Approve</button>
+            <button class="btn-decline">Decline</button>
+          </div>
+        </div>
+        <div class="approval-item">
+          <div class="emp-av c" style="width:34px;height:34px;font-size:12px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;">AM</div>
+          <div class="approval-info">
+            <div class="approval-name">Arjun Mehta</div>
+            <div class="approval-desc">WFH Request · 5 days</div>
+            <div class="approval-meta">Mar 27 – Mar 31 · BLR Team</div>
+          </div>
+          <div class="approval-actions">
+            <button class="btn-approve" onclick="approveItem(this)">Approve</button>
+            <button class="btn-decline">Decline</button>
+          </div>
+        </div>
+        <div class="approval-item">
+          <div class="emp-av d" style="width:34px;height:34px;font-size:12px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;flex-shrink:0;">RN</div>
+          <div class="approval-info">
+            <div class="approval-name">Ravi Nair</div>
+            <div class="approval-desc">Overtime · 12 hrs</div>
+            <div class="approval-meta">Mar 25–26 · HYD Infra Team</div>
+          </div>
+          <div class="approval-actions">
+            <button class="btn-approve" onclick="approveItem(this)">Approve</button>
+            <button class="btn-decline">Decline</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 3: REGIONAL + NOTIFICATIONS + PAYROLL SUMMARY -->
+    <div class="three-col">
+      <!-- REGION ATTENDANCE -->
+      <div class="card">
+        <div class="section-header">
+          <div>
+            <div class="section-title">Attendance by Region</div>
+            <div class="section-sub">Today, all locations</div>
+          </div>
+        </div>
+        <div class="bar-row"><div class="bar-label">Hyderabad</div><div class="bar-track"><div class="bar-fill blue" style="width:89%"></div></div><div class="bar-val">89%</div></div>
+        <div class="bar-row"><div class="bar-label">Bangalore</div><div class="bar-track"><div class="bar-fill green" style="width:84%"></div></div><div class="bar-val">84%</div></div>
+        <div class="bar-row"><div class="bar-label">Redmond US</div><div class="bar-track"><div class="bar-fill yellow" style="width:91%"></div></div><div class="bar-val">91%</div></div>
+        <div class="bar-row"><div class="bar-label">London</div><div class="bar-track"><div class="bar-fill purple" style="width:78%"></div></div><div class="bar-val">78%</div></div>
+        <div class="bar-row"><div class="bar-label">Dublin</div><div class="bar-track"><div class="bar-fill red" style="width:72%"></div></div><div class="bar-val">72%</div></div>
+      </div>
+
+      <!-- NOTIFICATIONS -->
+      <div class="card">
+        <div class="section-header">
+          <div class="section-title">Notifications</div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-dot-lg" style="background:var(--red)"></div>
+          <div class="notif-text">Payroll deadline — India region in 3 days<span>Auto-processing will trigger Mar 28</span></div>
+          <div class="notif-tz">09:00 IST</div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-dot-lg" style="background:var(--yellow)"></div>
+          <div class="notif-text">7 leave approvals pending in queue<span>Oldest: 2 days unresponded</span></div>
+          <div class="notif-tz">08:45 IST</div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-dot-lg" style="background:var(--accent)"></div>
+          <div class="notif-text">Azure AD sync completed<span>10,234 identities refreshed</span></div>
+          <div class="notif-tz">07:00 IST</div>
+        </div>
+      </div>
+
+      <!-- PAYROLL SUMMARY -->
+      <div class="card">
+        <div class="section-header">
+          <div class="section-title">Payroll — March 2026</div>
+        </div>
+        <div class="payroll-row"><div class="payroll-region"><div class="payroll-flag">🇮🇳</div><div><div>India</div><div class="payroll-sub">PF + TDS + ESI</div></div></div><div><div class="payroll-currency">₹8.2 Cr</div></div></div>
+        <div class="payroll-row"><div class="payroll-region"><div class="payroll-flag">🇺🇸</div><div><div>United States</div><div class="payroll-sub">Federal + Insurance</div></div></div><div><div class="payroll-currency">$2.9M</div></div></div>
+        <div class="payroll-row"><div class="payroll-region"><div class="payroll-flag">🇬🇧</div><div><div>UK / Europe</div><div class="payroll-sub">PAYE + NI</div></div></div><div><div class="payroll-currency">€1.4M</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ PROFILE PAGE ════════════════ -->
+  <div class="page" id="page-profile">
+    <div class="profile-hero">
+      <div class="profile-av">VK</div>
+      <div>
+        <div class="profile-name">Vivek Katuri</div>
+        <div class="profile-role">Cloud Architect · Associate Team Lead</div>
+        <div class="profile-id">EMP ID: MS-IND-HYD-10234</div>
+        <div class="profile-tags">
+          <span class="profile-tag">Azure</span>
+          <span class="profile-tag">Cloud Infra</span>
+          <span class="profile-tag">Hyderabad Office</span>
+          <span class="profile-tag">L5 — ATL</span>
+          <span class="profile-tag">Engineering</span>
+        </div>
+      </div>
+      <div class="profile-actions">
+        <button class="btn-secondary">Edit Profile</button>
+        <button class="btn-primary">Download Payslip</button>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="section-title" style="margin-bottom:16px">Personal Information</div>
+        <div class="info-grid">
+          <div class="info-item"><div class="info-label">Full Name</div><div class="info-value">Vivek Katuri</div></div>
+          <div class="info-item"><div class="info-label">Email</div><div class="info-value" style="font-size:12px;">vivekkaturi01@microsoft.com</div></div>
+          <div class="info-item"><div class="info-label">Location</div><div class="info-value">Hyderabad, India</div></div>
+          <div class="info-item"><div class="info-label">Timezone</div><div class="info-value">IST (UTC+5:30)</div></div>
+          <div class="info-item"><div class="info-label">Department</div><div class="info-value">Cloud Engineering</div></div>
+          <div class="info-item"><div class="info-label">Reports To</div><div class="info-value">Satya R. — Engineering VP</div></div>
+          <div class="info-item"><div class="info-label">Joined</div><div class="info-value">Jan 15, 2019</div></div>
+          <div class="info-item"><div class="info-label">Employee Type</div><div class="info-value">Full-Time · Permanent</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title" style="margin-bottom:16px">Compliance & Documents</div>
+        <div class="payroll-row"><div class="payroll-region"><span style="font-size:20px">📄</span><div><div>Form 16 — FY 2024-25</div><div class="payroll-sub">Income Tax Certificate</div></div></div><button class="btn-secondary" style="font-size:11px;padding:5px 10px;">Download</button></div>
+        <div class="payroll-row"><div class="payroll-region"><span style="font-size:20px">📋</span><div><div>Payslip — March 2026</div><div class="payroll-sub">PDF · Encrypted</div></div></div><button class="btn-primary" style="font-size:11px;padding:5px 10px;">Download</button></div>
+        <div class="payroll-row"><div class="payroll-region"><span style="font-size:20px">🔐</span><div><div>Offer Letter</div><div class="payroll-sub">Digitally Signed</div></div></div><button class="btn-secondary" style="font-size:11px;padding:5px 10px;">View</button></div>
+        <div class="payroll-row"><div class="payroll-region"><span style="font-size:20px">📊</span><div><div>Performance Review 2025</div><div class="payroll-sub">Completed</div></div></div><button class="btn-secondary" style="font-size:11px;padding:5px 10px;">View</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ EMPLOYEES PAGE ════════════════ -->
+  <div class="page" id="page-employees">
+    <div class="search-bar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Search by name, ID, location, department…" id="emp-search" oninput="filterEmployees()"/>
+    </div>
+    <div class="card">
+      <div class="section-header">
+        <div>
+          <div class="section-title">Employee Directory</div>
+          <div class="section-sub">10,234 employees · 5 locations</div>
+        </div>
+        <button class="btn-primary" style="font-size:11px;">+ Add Employee</button>
+      </div>
+      <div class="table-wrap">
+        <table id="emp-table">
+          <thead><tr><th>Employee</th><th>EMP ID</th><th>Location</th><th>Department</th><th>Level</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><div class="emp-cell"><div class="emp-av a">VK</div><div><div class="emp-name">Vivek Katuri</div><div class="emp-id">Cloud Architect</div></div></div></td><td style="font-family:var(--mono);font-size:11px;">MS-IND-HYD-10234</td><td><span class="loc-tag"><span class="loc-dot"></span>Hyderabad</span></td><td>Engineering</td><td>L5</td><td><span class="pill present">Active</span></td></tr>
+            <tr><td><div class="emp-cell"><div class="emp-av b">PR</div><div><div class="emp-name">Priya Reddy</div><div class="emp-id">SDE-II</div></div></div></td><td style="font-family:var(--mono);font-size:11px;">MS-IND-HYD-10891</td><td><span class="loc-tag"><span class="loc-dot"></span>Hyderabad</span></td><td>Engineering</td><td>L4</td><td><span class="pill present">Active</span></td></tr>
+            <tr><td><div class="emp-cell"><div class="emp-av c">AM</div><div><div class="emp-name">Arjun Mehta</div><div class="emp-id">Product Manager</div></div></div></td><td style="font-family:var(--mono);font-size:11px;">MS-IND-BLR-10345</td><td><span class="loc-tag"><span class="loc-dot" style="background:var(--yellow)"></span>Bangalore</span></td><td>Product</td><td>L5</td><td><span class="pill wfh">WFH</span></td></tr>
+            <tr><td><div class="emp-cell"><div class="emp-av d">SK</div><div><div class="emp-name">Sarah Khan</div><div class="emp-id">Data Scientist</div></div></div></td><td style="font-family:var(--mono);font-size:11px;">MS-UK-LON-20123</td><td><span class="loc-tag"><span class="loc-dot" style="background:var(--purple)"></span>London</span></td><td>AI Research</td><td>L5</td><td><span class="pill leave">On Leave</span></td></tr>
+            <tr><td><div class="emp-cell"><div class="emp-av e">MT</div><div><div class="emp-name">Mike Torres</div><div class="emp-id">DevOps Engineer</div></div></div></td><td style="font-family:var(--mono);font-size:11px;">MS-US-RED-30012</td><td><span class="loc-tag"><span class="loc-dot" style="background:var(--green)"></span>Redmond</span></td><td>Infrastructure</td><td>L4</td><td><span class="pill absent">Absent</span></td></tr>
+            <tr><td><div class="emp-cell"><div class="emp-av a">CN</div><div><div class="emp-name">Ciara Nolan</div><div class="emp-id">HR Business Partner</div></div></div></td><td style="font-family:var(--mono);font-size:11px;">MS-IE-DUB-40056</td><td><span class="loc-tag"><span class="loc-dot" style="background:var(--accent)"></span>Dublin</span></td><td>HR</td><td>L4</td><td><span class="pill present">Active</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ ORG CHART PAGE ════════════════ -->
+  <div class="page" id="page-org">
+    <div class="card">
+      <div class="section-title" style="margin-bottom:4px">Organization Hierarchy</div>
+      <div class="section-sub" style="margin-bottom:20px">Global → Region → Department → Team → Employee</div>
+      <div class="org-tree">
+        <div class="org-node root">🌐 Microsoft Global HQ — Redmond, US</div>
+        <div class="org-line"></div>
+        <div class="org-level">
+          <div class="org-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>India Region — Hyderabad & Bangalore</div>
+          <div class="org-line"></div>
+          <div class="org-level">
+            <div class="org-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.6 3.47 2 2 0 0 1 3.56 1.3h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.84a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Cloud Engineering — 124 employees</div>
+            <div class="org-line"></div>
+            <div class="org-level">
+              <div class="org-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Vivek Katuri — Associate Team Lead</div>
+              <div class="org-line"></div>
+              <div class="org-level">
+                <div class="org-node" style="font-size:11px;">👤 Priya Reddy — SDE-II</div>
+                <div class="org-node" style="font-size:11px;">👤 Ravi Nair — SDE-II</div>
+                <div class="org-node" style="font-size:11px;">👤 Deepa Sharma — SDE-I</div>
+              </div>
+            </div>
+          </div>
+          <div class="org-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Product Management — 67 employees</div>
+        </div>
+        <div class="org-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>UK / Europe Region — London & Dublin</div>
+        <div class="org-node"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>US Region — Redmond HQ</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ REGIONS PAGE ════════════════ -->
+  <div class="page" id="page-regions">
+    <div class="card">
+      <div class="section-title" style="margin-bottom:16px">Global Office Locations</div>
+      <div class="region-strip">
+        <div class="region-card active-region" onclick="selectRegion(this)">
+          <div class="region-flag">🇮🇳</div>
+          <div class="region-name">Hyderabad</div>
+          <div class="region-count">3,412 employees</div>
+          <div class="region-tz">IST (UTC+5:30)</div>
+        </div>
+        <div class="region-card" onclick="selectRegion(this)">
+          <div class="region-flag">🇮🇳</div>
+          <div class="region-name">Bangalore</div>
+          <div class="region-count">2,891 employees</div>
+          <div class="region-tz">IST (UTC+5:30)</div>
+        </div>
+        <div class="region-card" onclick="selectRegion(this)">
+          <div class="region-flag">🇺🇸</div>
+          <div class="region-name">Redmond</div>
+          <div class="region-count">2,104 employees</div>
+          <div class="region-tz">PST (UTC-8)</div>
+        </div>
+        <div class="region-card" onclick="selectRegion(this)">
+          <div class="region-flag">🇬🇧</div>
+          <div class="region-name">London</div>
+          <div class="region-count">1,203 employees</div>
+          <div class="region-tz">GMT (UTC+0)</div>
+        </div>
+        <div class="region-card" onclick="selectRegion(this)">
+          <div class="region-flag">🇮🇪</div>
+          <div class="region-name">Dublin</div>
+          <div class="region-count">624 employees</div>
+          <div class="region-tz">GMT (UTC+0)</div>
+        </div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="section-title" style="margin-bottom:14px">Leave Policies by Region</div>
+        <div class="payroll-row"><div class="payroll-region">🇮🇳 India</div><div style="font-size:12px;color:var(--text2)">Casual (12) · Sick (12) · Earned (21)</div></div>
+        <div class="payroll-row"><div class="payroll-region">🇺🇸 US</div><div style="font-size:12px;color:var(--text2)">PTO (25 days) · Federal Holidays (11)</div></div>
+        <div class="payroll-row"><div class="payroll-region">🇬🇧 UK</div><div style="font-size:12px;color:var(--text2)">Annual (28 days) · Statutory</div></div>
+        <div class="payroll-row"><div class="payroll-region">🇮🇪 Ireland</div><div style="font-size:12px;color:var(--text2)">Annual (20 days) · Bank Holidays</div></div>
+      </div>
+      <div class="card">
+        <div class="section-title" style="margin-bottom:14px">Compliance Status</div>
+        <div class="compliance-row"><div class="compliance-header"><span class="compliance-name">🇮🇳 India — PF/ESI/TDS</span><span class="compliance-pct">98%</span></div><div class="compliance-bar"><div class="compliance-fill" style="width:98%;background:var(--green)"></div></div></div>
+        <div class="compliance-row"><div class="compliance-header"><span class="compliance-name">🇺🇸 US — Federal Tax</span><span class="compliance-pct">100%</span></div><div class="compliance-bar"><div class="compliance-fill" style="width:100%;background:var(--accent)"></div></div></div>
+        <div class="compliance-row"><div class="compliance-header"><span class="compliance-name">🇬🇧 UK — GDPR</span><span class="compliance-pct">94%</span></div><div class="compliance-bar"><div class="compliance-fill" style="width:94%;background:var(--yellow)"></div></div></div>
+        <div class="compliance-row"><div class="compliance-header"><span class="compliance-name">🇮🇪 Ireland — Data Residency</span><span class="compliance-pct">91%</span></div><div class="compliance-bar"><div class="compliance-fill" style="width:91%;background:var(--purple)"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ ATTENDANCE PAGE ════════════════ -->
+  <div class="page" id="page-attendance">
+    <div class="stat-grid">
+      <div class="stat-card blue"><div class="stat-label">Checked In</div><div class="stat-value">8,741</div><div class="stat-sub">across all regions</div></div>
+      <div class="stat-card yellow"><div class="stat-label">WFH Today</div><div class="stat-value">892</div><div class="stat-sub">biometric bypassed</div></div>
+      <div class="stat-card green"><div class="stat-label">On Leave</div><div class="stat-value">312</div><div class="stat-sub">approved requests</div></div>
+      <div class="stat-card purple"><div class="stat-label">Absent</div><div class="stat-value">289</div><div class="stat-sub"><span class="stat-delta down">↑ 42</span> vs yesterday</div></div>
+    </div>
+    <div class="card">
+      <div class="section-title" style="margin-bottom:4px">Timezone-Aware Check-in Log</div>
+      <div class="section-sub" style="margin-bottom:16px">Real-time · All locations · Biometric + Geo-tagged</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Employee</th><th>Region</th><th>Local Time</th><th>Device</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><div class="emp-cell"><div class="emp-av a">VK</div><div><div class="emp-name">Vivek Katuri</div></div></div></td><td>🇮🇳 HYD</td><td style="font-family:var(--mono);font-size:11px;">09:04 AM IST</td><td>Biometric</td><td><span class="pill present">Present</span></td></tr>
+            <tr><td><div class="emp-cell"><div class="emp-av b">PR</div><div><div class="emp-name">Priya Reddy</div></div></div></td><td>🇮🇳 HYD</td><td style="font-family:var(--mono);font-size:11px;">08:58 AM IST</td><td>Biometric</td><td><span class="pill present">Present</span></td></tr>
+            <tr><td><div class="emp-cell"><div class="emp-av c">AM</div><div><div class="emp-name">Arjun Mehta</div></div></div></td><td>🇮🇳 BLR</td><td style="font-family:var(--mono);font-size:11px;">09:22 AM IST</td><td>App (Mobile)</td><td><span class="pill wfh">WFH</span></td></tr>
+            <tr><td><div class="emp-cell"><div class="emp-av e">MT</div><div><div class="emp-name">Mike Torres</div></div></div></td><td>🇺🇸 RED</td><td style="font-family:var(--mono);font-size:11px;">— PST</td><td>—</td><td><span class="pill absent">Absent</span></td></tr>
+            <tr><td><div class="emp-cell"><div class="emp-av d">SK</div><div><div class="emp-name">Sarah Khan</div></div></div></td><td>🇬🇧 LON</td><td style="font-family:var(--mono);font-size:11px;">— GMT</td><td>—</td><td><span class="pill leave">On Leave</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ LEAVE PAGE ════════════════ -->
+  <div class="page" id="page-leave">
+    <div class="leave-balance-grid">
+      <div class="leave-bal"><div class="leave-bal-num" style="color:var(--accent)">12</div><div class="leave-bal-type">Casual Leave</div></div>
+      <div class="leave-bal"><div class="leave-bal-num" style="color:var(--green)">8</div><div class="leave-bal-type">Sick Leave</div></div>
+      <div class="leave-bal"><div class="leave-bal-num" style="color:var(--yellow)">18</div><div class="leave-bal-type">Earned Leave</div></div>
+      <div class="leave-bal"><div class="leave-bal-num" style="color:var(--purple)">3</div><div class="leave-bal-type">Optional Holiday</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="section-title" style="margin-bottom:16px">Apply for Leave</div>
+        <div class="leave-form">
+          <div class="form-group">
+            <label class="form-label">Leave Type</label>
+            <select class="form-input">
+              <option>Casual Leave</option>
+              <option>Sick Leave</option>
+              <option>Earned Leave</option>
+              <option>Optional Holiday</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Start Date</label>
+            <input type="date" class="form-input" value="2026-03-28"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">End Date</label>
+            <input type="date" class="form-input" value="2026-03-30"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Reason</label>
+            <input type="text" class="form-input" placeholder="Brief reason…"/>
+          </div>
+        </div>
+        <button class="btn-primary" style="margin-top:16px;width:100%" onclick="submitLeave()">Submit Request</button>
+      </div>
+      <div class="card">
+        <div class="section-title" style="margin-bottom:14px">Leave History</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Type</th><th>Period</th><th>Days</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>Casual</td><td style="font-family:var(--mono);font-size:11px;">Jan 10–11</td><td>2</td><td><span class="pill present">Approved</span></td></tr>
+              <tr><td>Sick</td><td style="font-family:var(--mono);font-size:11px;">Feb 3</td><td>1</td><td><span class="pill present">Approved</span></td></tr>
+              <tr><td>Earned</td><td style="font-family:var(--mono);font-size:11px;">Mar 28–30</td><td>3</td><td><span class="pill leave">Pending</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ PAYROLL PAGE ════════════════ -->
+  <div class="page" id="page-payroll">
+    <div class="stat-grid">
+      <div class="stat-card blue"><div class="stat-label">India Payroll</div><div class="stat-value">₹8.2Cr</div><div class="stat-sub">PF · ESI · TDS included</div></div>
+      <div class="stat-card green"><div class="stat-label">US Payroll</div><div class="stat-value">$2.9M</div><div class="stat-sub">Federal + Benefits</div></div>
+      <div class="stat-card yellow"><div class="stat-label">Europe Payroll</div><div class="stat-value">€1.4M</div><div class="stat-sub">PAYE · NI · Country-specific</div></div>
+      <div class="stat-card purple"><div class="stat-label">Status</div><div class="stat-value" style="font-size:18px;margin-top:4px">Processing</div><div class="stat-sub"><span class="stat-delta down">Due Mar 28</span></div></div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="section-title" style="margin-bottom:14px">Your Payslip — March 2026</div>
+        <div class="payroll-row"><div>Basic Salary</div><div style="font-family:var(--mono);color:var(--green)">₹1,80,000</div></div>
+        <div class="payroll-row"><div>HRA Allowance</div><div style="font-family:var(--mono);color:var(--green)">₹72,000</div></div>
+        <div class="payroll-row"><div>Special Allowance</div><div style="font-family:var(--mono);color:var(--green)">₹34,000</div></div>
+        <div class="payroll-row"><div>Provident Fund (PF)</div><div style="font-family:var(--mono);color:var(--red)">−₹21,600</div></div>
+        <div class="payroll-row"><div>TDS</div><div style="font-family:var(--mono);color:var(--red)">−₹28,400</div></div>
+        <div class="payroll-row" style="font-weight:600;font-size:13px;"><div style="color:var(--text)">Net Take Home</div><div style="font-family:var(--mono);color:var(--accent)">₹2,36,000</div></div>
+      </div>
+      <div class="card">
+        <div class="section-title" style="margin-bottom:14px">Payroll Calendar</div>
+        <div class="payroll-row"><div class="payroll-region">🇮🇳 India</div><div style="font-size:11px;font-family:var(--mono);color:var(--yellow)">Mar 28 · Auto-trigger</div></div>
+        <div class="payroll-row"><div class="payroll-region">🇺🇸 US</div><div style="font-size:11px;font-family:var(--mono);color:var(--green)">Mar 29 · Direct Deposit</div></div>
+        <div class="payroll-row"><div class="payroll-region">🇬🇧 UK</div><div style="font-size:11px;font-family:var(--mono);color:var(--green)">Mar 27 · Processed</div></div>
+        <div class="payroll-row"><div class="payroll-region">🇮🇪 Ireland</div><div style="font-size:11px;font-family:var(--mono);color:var(--green)">Mar 27 · Processed</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ SECURITY PAGE ════════════════ -->
+  <div class="page" id="page-security">
+    <div class="two-col">
+      <div class="card">
+        <div class="section-title" style="margin-bottom:14px">Access Control Log</div>
+        <div class="log-item"><div class="log-icon ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="log-info"><div class="log-label">Vivek Katuri — SSO Login</div><div class="log-sub">Device: Dell XPS · HYD Office · Azure AD Verified</div></div><div class="log-time">09:04 IST</div></div>
+        <div class="log-item"><div class="log-icon warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="log-info"><div class="log-label">Unknown Device Login Attempt</div><div class="log-sub">User: ravi.nair — Blocked · Unknown IP · Nigeria</div></div><div class="log-time">07:34 IST</div></div>
+        <div class="log-item"><div class="log-icon ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="log-info"><div class="log-label">Azure AD Sync — Completed</div><div class="log-sub">10,234 identities · Conditional Access Applied</div></div><div class="log-time">07:00 IST</div></div>
+        <div class="log-item"><div class="log-icon err"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div><div class="log-info"><div class="log-label">MFA Failed — 3 attempts</div><div class="log-sub">User: deepa.sharma · Locked for 30 mins</div></div><div class="log-time">06:48 IST</div></div>
+      </div>
+      <div class="card">
+        <div class="section-title" style="margin-bottom:14px">Compliance & GDPR</div>
+        <div class="compliance-row"><div class="compliance-header"><span class="compliance-name">Data Encryption (AES-256)</span><span class="compliance-pct">100%</span></div><div class="compliance-bar"><div class="compliance-fill" style="width:100%;background:var(--green)"></div></div></div>
+        <div class="compliance-row"><div class="compliance-header"><span class="compliance-name">GDPR Compliance — Europe</span><span class="compliance-pct">94%</span></div><div class="compliance-bar"><div class="compliance-fill" style="width:94%;background:var(--yellow)"></div></div></div>
+        <div class="compliance-row"><div class="compliance-header"><span class="compliance-name">Role-Based Data Masking</span><span class="compliance-pct">100%</span></div><div class="compliance-bar"><div class="compliance-fill" style="width:100%;background:var(--green)"></div></div></div>
+        <div class="compliance-row"><div class="compliance-header"><span class="compliance-name">Audit Trail Coverage</span><span class="compliance-pct">99%</span></div><div class="compliance-bar"><div class="compliance-fill" style="width:99%;background:var(--accent)"></div></div></div>
+        <div class="compliance-row"><div class="compliance-header"><span class="compliance-name">Data Residency Rules (EU)</span><span class="compliance-pct">88%</span></div><div class="compliance-bar"><div class="compliance-fill" style="width:88%;background:var(--red)"></div></div></div>
+        <div style="margin-top:16px;padding:12px;background:rgba(0,168,255,0.08);border:1px solid rgba(0,168,255,0.2);border-radius:8px;font-size:11px;color:var(--text2)">
+          ⚡ Conditional access policies active — Login blocked from 14 unknown locations this week.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ INTEGRATIONS PAGE ════════════════ -->
+  <div class="page" id="page-integrations">
+    <div class="card">
+      <div class="section-title" style="margin-bottom:4px">Connected Systems</div>
+      <div class="section-sub" style="margin-bottom:20px">Real-time integration health status</div>
+      <div class="integration-grid">
+        <div class="integration-tile"><div class="int-icon" style="background:#0078d4">💬</div><div><div class="int-name">Microsoft Teams</div><div class="int-status ok">● Connected · Live</div></div></div>
+        <div class="integration-tile"><div class="int-icon" style="background:#0072c6">📧</div><div><div class="int-name">Outlook Calendar</div><div class="int-status ok">● Synced · Live</div></div></div>
+        <div class="integration-tile"><div class="int-icon" style="background:#00a4ef">🔐</div><div><div class="int-name">Azure Active Directory</div><div class="int-status ok">● Connected · 10,234 IDs</div></div></div>
+        <div class="integration-tile"><div class="int-icon" style="background:#3a3a3a">🖐</div><div><div class="int-name">Biometric Devices</div><div class="int-status ok">● All 5 offices online</div></div></div>
+        <div class="integration-tile"><div class="int-icon" style="background:#ff6b35">📊</div><div><div class="int-name">SAP HR System</div><div class="int-status warn">⚠ Sync Delayed · 4h</div></div></div>
+        <div class="integration-tile"><div class="int-icon" style="background:#1d6f42">📋</div><div><div class="int-name">Payroll Engine (Multi-Region)</div><div class="int-status ok">● Processing Mar 2026</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ REPORTS PAGE ════════════════ -->
+  <div class="page" id="page-reports">
+    <div class="two-col">
+      <div class="card">
+        <div class="section-title" style="margin-bottom:14px">Global Attendance Trends (Last 6 months)</div>
+        <div class="mini-chart" style="height:60px;align-items:flex-end;gap:6px;margin-bottom:8px;">
+          <div class="mini-bar" style="height:68%;width:24px;border-radius:3px 3px 0 0"></div>
+          <div class="mini-bar" style="height:75%;width:24px;border-radius:3px 3px 0 0"></div>
+          <div class="mini-bar" style="height:80%;width:24px;border-radius:3px 3px 0 0"></div>
+          <div class="mini-bar" style="height:72%;width:24px;border-radius:3px 3px 0 0"></div>
+          <div class="mini-bar" style="height:88%;width:24px;border-radius:3px 3px 0 0"></div>
+          <div class="mini-bar" style="height:85%;width:24px;border-radius:3px 3px 0 0;background:var(--accent)"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);font-family:var(--mono)">
+          <span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span><span>Feb</span><span>Mar</span>
+        </div>
+        <div style="margin-top:14px">
+          <div class="bar-row"><div class="bar-label">Hyderabad</div><div class="bar-track"><div class="bar-fill blue" style="width:89%"></div></div><div class="bar-val">89%</div></div>
+          <div class="bar-row"><div class="bar-label">Redmond</div><div class="bar-track"><div class="bar-fill green" style="width:91%"></div></div><div class="bar-val">91%</div></div>
+          <div class="bar-row"><div class="bar-label">London</div><div class="bar-track"><div class="bar-fill purple" style="width:78%"></div></div><div class="bar-val">78%</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title" style="margin-bottom:14px">Payroll Cost by Region</div>
+        <div class="bar-row"><div class="bar-label">India</div><div class="bar-track"><div class="bar-fill blue" style="width:62%"></div></div><div class="bar-val" style="width:55px">₹8.2Cr</div></div>
+        <div class="bar-row"><div class="bar-label">US</div><div class="bar-track"><div class="bar-fill green" style="width:45%"></div></div><div class="bar-val" style="width:55px">$2.9M</div></div>
+        <div class="bar-row"><div class="bar-label">Europe</div><div class="bar-track"><div class="bar-fill purple" style="width:28%"></div></div><div class="bar-val" style="width:55px">€1.4M</div></div>
+        <div style="margin-top:16px;padding:12px;background:var(--surface2);border-radius:8px;font-size:11px;color:var(--text2)">
+          📊 Attrition Rate: <strong style="color:var(--yellow)">6.2%</strong> globally · <strong style="color:var(--red)">8.1%</strong> India · <strong style="color:var(--green)">3.4%</strong> US
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title" style="margin-bottom:14px">Available Reports</div>
+      <div class="integration-grid">
+        <div class="integration-tile"><div class="int-icon" style="background:rgba(0,168,255,0.15);font-size:18px">📈</div><div><div class="int-name">Attendance Export</div><div class="int-status ok" style="font-size:10px">CSV · All regions</div></div></div>
+        <div class="integration-tile"><div class="int-icon" style="background:rgba(34,197,94,0.15);font-size:18px">💰</div><div><div class="int-name">Payroll Summary</div><div class="int-status ok" style="font-size:10px">PDF · Per region</div></div></div>
+        <div class="integration-tile"><div class="int-icon" style="background:rgba(245,158,11,0.15);font-size:18px">📋</div><div><div class="int-name">Compliance Report</div><div class="int-status ok" style="font-size:10px">GDPR · PF · Tax</div></div></div>
+        <div class="integration-tile"><div class="int-icon" style="background:rgba(168,85,247,0.15);font-size:18px">🏃</div><div><div class="int-name">Attrition Analysis</div><div class="int-status ok" style="font-size:10px">Quarterly</div></div></div>
+        <div class="integration-tile"><div class="int-icon" style="background:rgba(239,68,68,0.15);font-size:18px">🔐</div><div><div class="int-name">Security Audit</div><div class="int-status ok" style="font-size:10px">Full log export</div></div></div>
+        <div class="integration-tile"><div class="int-icon" style="background:rgba(0,168,255,0.1);font-size:18px">🌍</div><div><div class="int-name">Global Headcount</div><div class="int-status ok" style="font-size:10px">Real-time snapshot</div></div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+  // LIVE CLOCK
+  function updateClock() {
+    const now = new Date();
+    const ist = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
+    const h = ist.getUTCHours(), m = ist.getUTCMinutes(), s = ist.getUTCSeconds();
+    document.getElementById('clock').textContent =
+      `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // PAGE NAVIGATION
+  const pageTitles = {
+    dashboard: 'Dashboard',
+    profile: 'My Profile',
+    employees: 'Employee Directory',
+    org: 'Organization Chart',
+    regions: 'Regions & Locations',
+    attendance: 'Attendance Tracker',
+    leave: 'Leave Management',
+    payroll: 'Payroll Engine',
+    security: 'Security & Compliance',
+    integrations: 'Integrations',
+    reports: 'Reports & Analytics'
+  };
+  const pageSubs = {
+    dashboard: 'Good morning, Vivek 👋',
+    profile: 'MS-IND-HYD-10234',
+    employees: '10,234 employees · 5 regions',
+    org: 'Global → Region → Dept → Team',
+    regions: '5 locations · Multi-timezone',
+    attendance: 'Real-time · Timezone-aware',
+    leave: 'India Leave Policy · IST',
+    payroll: 'March 2026 · Multi-currency',
+    security: 'Azure AD · Audit Trail',
+    integrations: '6 active connections',
+    reports: 'Big data · Leadership view'
+  };
+
+  function showPage(id, el) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('page-' + id).classList.add('active');
+    el.classList.add('active');
+    document.getElementById('page-title').innerHTML =
+      `${pageTitles[id]} <span>${pageSubs[id]}</span>`;
+  }
+
+  // APPROVE BUTTON
+  function approveItem(btn) {
+    const item = btn.closest('.approval-item');
+    btn.textContent = '✓ Approved';
+    btn.style.background = 'rgba(34,197,94,0.25)';
+    btn.style.cursor = 'default';
+    btn.disabled = true;
+    const decBtn = item.querySelector('.btn-decline');
+    if (decBtn) decBtn.style.display = 'none';
+  }
+
+  // LEAVE SUBMIT
+  function submitLeave() {
+    alert('Leave request submitted! Awaiting manager approval.');
+  }
+
+  // EMPLOYEE SEARCH
+  function filterEmployees() {
+    const q = document.getElementById('emp-search').value.toLowerCase();
+    document.querySelectorAll('#emp-table tbody tr').forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  }
+
+  // REGION SELECT
+  function selectRegion(el) {
+    document.querySelectorAll('.region-card').forEach(c => c.classList.remove('active-region'));
+    el.classList.add('active-region');
+  }
+</script>
+</body>
+</html>
