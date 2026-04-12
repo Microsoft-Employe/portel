@@ -180,6 +180,7 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
 .pill.inprog{background:var(--blue-soft);color:var(--blue);} .pill.inprog::before{background:var(--blue);}
 .pill.active-p{background:var(--green-s);color:var(--green);} .pill.active-p::before{background:var(--green);}
 .pill.onboarding{background:rgba(6,182,212,0.15);color:var(--cyan);} .pill.onboarding::before{background:var(--cyan);}
+.pill.noresponse{background:rgba(244,63,94,0.12);color:var(--red);} .pill.noresponse::before{background:var(--red);}
 .loc-tag{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);font-family:var(--mono);}
 .loc-dot{width:5px;height:5px;border-radius:50%;}
 
@@ -216,7 +217,7 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
 .btn-decline{background:var(--red-s);color:var(--red);}
 .btn-decline:hover{background:rgba(244,63,94,0.22);}
 
-/* TASKS - FIXED */
+/* TASKS */
 .task-item{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid var(--border);transition:var(--transition);}
 .task-item:last-child{border-bottom:none;}
 .task-item.completed{opacity:0.5;}
@@ -232,19 +233,52 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
 .task-check.checked{background:var(--green);border-color:var(--green);}
 .task-check.checked::after{content:'✓';font-size:10px;color:#fff;font-weight:700;}
 
-/* RESUME UPLOAD */
-.resume-upload-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:24px 20px;text-align:center;cursor:pointer;transition:var(--transition);position:relative;background:var(--surface2);}
-.resume-upload-zone:hover,.resume-upload-zone.dragover{border-color:var(--blue);background:var(--blue-soft);}
-.resume-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-.resume-upload-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;}
-.resume-upload-sub{font-size:11px;color:var(--text2);}
-.resume-file-display{display:none;align-items:center;gap:12px;padding:14px;background:var(--surface2);border:1px solid var(--green);border-radius:var(--radius-sm);margin-top:12px;}
-.resume-file-display.show{display:flex;}
-.resume-file-name{font-size:12px;font-weight:600;color:var(--text);}
-.resume-file-size{font-size:10px;color:var(--text2);font-family:var(--mono);}
-.resume-remove{background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;padding:2px 6px;border-radius:4px;transition:var(--transition);}
-.resume-remove:hover{color:var(--red);background:var(--red-s);}
-.resume-task-tag{display:inline-flex;align-items:center;gap:5px;font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2);font-family:var(--mono);}
+/* ══════════════════════════════════════════
+   CAREER PATH SECTION (replaces resume upload)
+   ══════════════════════════════════════════ */
+.career-path-card{background:linear-gradient(135deg,rgba(14,165,233,0.07),rgba(139,92,246,0.05));border:1px solid rgba(14,165,233,0.18);border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;}
+.career-path-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(14,165,233,0.4),rgba(139,92,246,0.3),transparent);}
+.cp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.cp-title{font-family:var(--font-head);font-size:14px;font-weight:700;color:var(--text);}
+.cp-sub{font-size:11px;color:var(--text2);margin-top:2px;}
+.cp-timeline{display:flex;align-items:flex-start;gap:0;position:relative;padding:8px 0;}
+.cp-timeline::before{content:'';position:absolute;top:24px;left:20px;right:20px;height:2px;background:linear-gradient(90deg,var(--green),var(--blue),var(--purple),var(--yellow-s));border-radius:2px;z-index:0;}
+.cp-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;position:relative;z-index:1;}
+.cp-dot{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0;border:2px solid var(--bg);}
+.cp-dot.done-dot{background:var(--green);box-shadow:0 0 10px rgba(16,185,129,0.4);}
+.cp-dot.current-dot{background:var(--blue);box-shadow:0 0 14px rgba(14,165,233,0.5);animation:cpPulse 2s infinite;}
+.cp-dot.next-dot{background:var(--surface3);border:2px solid var(--border2);}
+@keyframes cpPulse{0%,100%{box-shadow:0 0 8px rgba(14,165,233,0.4);}50%{box-shadow:0 0 20px rgba(14,165,233,0.7);}}
+.cp-label{font-size:9px;font-weight:600;text-align:center;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;line-height:1.4;max-width:60px;}
+.cp-label.active-label{color:var(--blue);}
+.cp-label.done-label{color:var(--green);}
+.cp-year{font-size:9px;font-family:var(--mono);color:var(--text3);text-align:center;}
+.cp-current-role{background:var(--blue-soft);border:1px solid rgba(14,165,233,0.2);border-radius:var(--radius-sm);padding:12px 14px;margin-top:14px;display:flex;align-items:center;gap:12px;}
+.cp-current-badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;background:rgba(14,165,233,0.15);color:var(--blue);text-transform:uppercase;letter-spacing:0.06em;flex-shrink:0;}
+.cp-current-text{font-size:12px;color:var(--text);font-weight:500;}
+.cp-current-sub{font-size:10px;color:var(--text2);font-family:var(--mono);margin-top:2px;}
+.cp-next-role{background:var(--green-s);border:1px solid rgba(16,185,129,0.2);border-radius:var(--radius-sm);padding:12px 14px;margin-top:8px;display:flex;align-items:center;gap:12px;}
+.cp-next-badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;background:rgba(16,185,129,0.15);color:var(--green);text-transform:uppercase;letter-spacing:0.06em;flex-shrink:0;}
+
+/* ══════════════════════════════════════════
+   REFERRAL CANDIDATES TABLE (career page)
+   ══════════════════════════════════════════ */
+.refer-cand-table{width:100%;border-collapse:collapse;}
+.refer-cand-table thead th{padding:8px 12px;font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);text-align:left;white-space:nowrap;}
+.refer-cand-table tbody td{padding:11px 12px;font-size:12px;color:var(--text2);border-bottom:1px solid var(--border);}
+.refer-cand-table tbody tr:last-child td{border-bottom:none;}
+.refer-cand-table tbody tr:hover td{background:rgba(14,165,233,0.03);}
+.cand-name{font-size:12px;font-weight:600;color:var(--text);}
+.cand-id{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:1px;}
+.status-note{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:3px;display:flex;align-items:center;gap:5px;}
+.status-note.warn{color:var(--red);}
+.status-note.ok{color:var(--green);}
+.follow-btn{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:4px 10px;font-size:10px;font-weight:600;color:var(--text2);font-family:var(--font);cursor:pointer;transition:var(--transition);}
+.follow-btn:hover{border-color:var(--blue);color:var(--blue);}
+.refer-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.refer-stat-mini{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center;}
+.refer-stat-num{font-family:var(--font-head);font-size:18px;font-weight:700;}
+.refer-stat-lbl{font-size:10px;color:var(--text2);margin-top:3px;}
 
 /* CAREER PAGE */
 .career-hero{background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(139,92,246,0.08));border:1px solid rgba(14,165,233,0.2);border-radius:var(--radius);padding:28px;text-align:center;position:relative;overflow:hidden;}
@@ -414,8 +448,9 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
 .info-box.blue{background:rgba(14,165,233,0.07);border:1px solid rgba(14,165,233,0.15);}
 .info-box.yellow{background:var(--yellow-s);border:1px solid rgba(245,158,11,0.2);}
 .info-box.green{background:var(--green-s);border:1px solid rgba(16,185,129,0.2);}
+.info-box.red{background:var(--red-s);border:1px solid rgba(244,63,94,0.2);}
 
-/* DAILY REFRESH BADGE */
+/* REFRESH BADGE */
 .refresh-badge{display:inline-flex;align-items:center;gap:6px;font-size:10px;color:var(--cyan);font-family:var(--mono);background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.2);padding:3px 10px;border-radius:20px;}
 .refresh-dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);animation:blink 1.5s infinite;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
@@ -510,7 +545,7 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9990;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity 0.2s;}
 .modal-overlay.show{opacity:1;pointer-events:auto;}
-.modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:28px;width:480px;max-width:95vw;box-shadow:0 32px 64px rgba(0,0,0,0.6);transform:scale(0.96);transition:transform 0.2s;}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:28px;width:480px;max-width:95vw;box-shadow:0 32px 64px rgba(0,0,0,0.6);transform:scale(0.96);transition:transform 0.2s;position:relative;}
 .modal-overlay.show .modal{transform:scale(1);}
 .modal-title{font-family:var(--font-head);font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;}
 .modal-sub{font-size:12px;color:var(--text2);margin-bottom:20px;}
@@ -537,9 +572,8 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
   <span id="tmsg">Action complete</span>
 </div>
 
-<!-- REFER MODAL -->
 <div class="modal-overlay" id="refer-modal">
-  <div class="modal" style="position:relative;">
+  <div class="modal">
     <button class="modal-close" onclick="closeModal('refer-modal')">✕</button>
     <div class="modal-title">👥 Refer a Colleague</div>
     <div class="modal-sub" id="refer-modal-role">Refer someone for this position</div>
@@ -558,9 +592,8 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
   </div>
 </div>
 
-<!-- SIGN MODAL -->
 <div class="modal-overlay" id="sign-modal">
-  <div class="modal" style="position:relative;">
+  <div class="modal">
     <button class="modal-close" onclick="closeModal('sign-modal')">✕</button>
     <div class="modal-title">✍️ Electronic Signature</div>
     <div class="modal-sub" id="sign-modal-doc">Please review and sign this document</div>
@@ -575,7 +608,21 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
   </div>
 </div>
 
-<!-- LOGIN -->
+<div class="modal-overlay" id="followup-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('followup-modal')">✕</button>
+    <div class="modal-title">📞 Log Follow-Up</div>
+    <div class="modal-sub" id="followup-candidate-name">Candidate: —</div>
+    <div class="fgroup"><label class="flabel">Follow-Up Date</label><input type="date" class="finput" style="padding-left:12px" id="followup-date"/></div>
+    <div class="fgroup"><label class="flabel">Contact Method</label><select class="finput" style="padding-left:12px"><option>Phone Call</option><option>WhatsApp</option><option>Email</option><option>LinkedIn</option></select></div>
+    <div class="fgroup" style="margin-bottom:0"><label class="flabel">Notes / Outcome</label><textarea class="finput" style="padding-left:12px;height:80px;resize:none;padding-top:10px" id="followup-notes" placeholder="e.g. No response, called back, interested, declined…"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal('followup-modal')">Cancel</button>
+      <button class="btn-primary" onclick="submitFollowup()">Save Follow-Up</button>
+    </div>
+  </div>
+</div>
+
 <div id="login-screen">
   <div class="login-bg-mesh"></div><div class="login-grid-bg"></div>
   <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
@@ -612,7 +659,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
   </div>
 </div>
 
-<!-- APP SHELL -->
 <div id="app-shell">
 <nav class="sidebar">
   <div class="sb-logo">
@@ -646,7 +692,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
   </div>
   <div class="content">
 
-    <!-- EMPLOYEE: DASHBOARD -->
     <div class="page" id="page-emp-dashboard">
       <div class="stat-grid">
         <div class="stat-card c-blue"><div class="stat-label">Leave Balance</div><div class="stat-value">38</div><div class="stat-sub">days remaining this year</div></div>
@@ -697,7 +742,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- EMPLOYEE: TASKS (FIXED - completion removes overdue) -->
     <div class="page" id="page-emp-tasks">
       <div class="stat-grid">
         <div class="stat-card c-red"><div class="stat-label">Overdue</div><div class="stat-value" id="tasks-overdue-count">2</div><div class="stat-sub">Immediate action needed</div></div>
@@ -705,32 +749,80 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
         <div class="stat-card c-blue"><div class="stat-label">In Progress</div><div class="stat-value">2</div><div class="stat-sub">Active tasks</div></div>
         <div class="stat-card c-green"><div class="stat-label">Completed (MTD)</div><div class="stat-value" id="completed-count">11</div><div class="stat-sub"><span class="delta up">↑ 4</span> vs last month</div></div>
       </div>
-      <div class="card">
-        <div class="sec-head">
-          <div><div class="sec-title">📎 Reference Resume</div><div class="sec-sub">Upload resume for task context, performance reviews & career matching</div></div>
-          <div class="refresh-badge"><div class="refresh-dot"></div>Auto-synced daily</div>
-        </div>
-        <div class="resume-upload-zone" id="resume-drop-zone" onclick="document.getElementById('resume-file-input').click()" ondragover="event.preventDefault();this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="handleResumeDrop(event)">
-          <input type="file" id="resume-file-input" accept=".pdf,.doc,.docx" onchange="handleResumeUpload(this)"/>
-          <div style="font-size:28px;margin-bottom:8px">📄</div>
-          <div class="resume-upload-title">Drop your resume here or click to upload</div>
-          <div class="resume-upload-sub">PDF, DOC, DOCX — Max 5MB · Encrypted at rest</div>
-        </div>
-        <div class="resume-file-display" id="resume-file-display">
-          <div style="font-size:22px">📋</div>
-          <div class="resume-file-info">
-            <div class="resume-file-name" id="resume-file-name">resume.pdf</div>
-            <div class="resume-file-size" id="resume-file-size">0 KB · Uploaded today</div>
+
+      <div class="career-path-card">
+        <div class="cp-header">
+          <div>
+            <div class="cp-title">🚀 My Career Path at Microsoft</div>
+            <div class="cp-sub">Track your progression from SDE-I to Senior Leadership</div>
           </div>
-          <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
-            <span class="resume-task-tag">✓ Linked to tasks</span>
-            <button class="resume-remove" onclick="removeResume()">✕</button>
+          <button class="btn-primary" style="font-size:11px;display:flex;align-items:center;gap:6px" onclick="goPage('emp-career')">
+            Explore Open Roles →
+          </button>
+        </div>
+        <div class="cp-timeline">
+          <div class="cp-step">
+            <div class="cp-dot done-dot">✓</div>
+            <div class="cp-label done-label">SDE-I</div>
+            <div class="cp-year">2019</div>
+          </div>
+          <div class="cp-step">
+            <div class="cp-dot done-dot">✓</div>
+            <div class="cp-label done-label">SDE-II</div>
+            <div class="cp-year">2021</div>
+          </div>
+          <div class="cp-step">
+            <div class="cp-dot done-dot">✓</div>
+            <div class="cp-label done-label">Sr. Cloud Eng.</div>
+            <div class="cp-year">2022</div>
+          </div>
+          <div class="cp-step">
+            <div class="cp-dot current-dot">★</div>
+            <div class="cp-label active-label">Cloud Arch. · ATL</div>
+            <div class="cp-year">2023 – Now</div>
+          </div>
+          <div class="cp-step">
+            <div class="cp-dot next-dot"></div>
+            <div class="cp-label">Principal Eng.</div>
+            <div class="cp-year">L6 Target</div>
+          </div>
+          <div class="cp-step">
+            <div class="cp-dot next-dot"></div>
+            <div class="cp-label">Eng. Manager</div>
+            <div class="cp-year">L7 Target</div>
+          </div>
+          <div class="cp-step">
+            <div class="cp-dot next-dot"></div>
+            <div class="cp-label">Sr. Director</div>
+            <div class="cp-year">L8+</div>
           </div>
         </div>
+        <div class="cp-current-role">
+          <div class="cp-current-badge">Current</div>
+          <div>
+            <div class="cp-current-text">Cloud Architect · Associate Team Lead — L5</div>
+            <div class="cp-current-sub">Jun 2023 – Present · Cloud Engineering · HYD · ₹34L CTC</div>
+          </div>
+          <div style="margin-left:auto"><span class="pill inprog">Active</span></div>
+        </div>
+        <div class="cp-next-role">
+          <div class="cp-next-badge">Next Goal</div>
+          <div>
+            <div style="font-size:12px;color:var(--text);font-weight:500">Principal Cloud Engineer — L6</div>
+            <div style="font-size:10px;color:var(--text2);font-family:var(--mono);margin-top:2px">AZ-305 certification + 1 more KT session required · Est. Q3 2026</div>
+          </div>
+          <div style="margin-left:auto"><button class="btn-career-secondary" style="font-size:11px;padding:6px 12px" onclick="goPage('emp-career')">View Role →</button></div>
+        </div>
+        <div class="info-box blue" style="margin-top:12px">💡 Complete your <strong style="color:var(--text)">AZ-305</strong> certification exam (55% done) and one more knowledge-transfer session to unlock the L6 nomination process.</div>
       </div>
+
       <div class="card">
         <div class="sec-head">
           <div><div class="sec-title">All Assigned Tasks</div><div class="sec-sub">Assigned by Satya R. · <span id="tasks-date-label">Loading…</span></div></div>
+          <div class="search-bar" style="margin-bottom:0; width: 200px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Search tasks..." id="task-filter-input" oninput="filterLocalTasks()"/>
+          </div>
           <button class="btn-primary" style="font-size:11px;display:flex;align-items:center;gap:6px" onclick="refreshTasks()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Refresh
           </button>
@@ -746,7 +838,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- EMPLOYEE: TIMESHEETS -->
     <div class="page" id="page-emp-timesheets">
       <div class="stat-grid">
         <div class="stat-card c-blue"><div class="stat-label">Hours This Week</div><div class="stat-value">38.5</div><div class="stat-sub">Mon–Fri · IST</div></div>
@@ -770,7 +861,7 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
         <div class="info-box blue" style="margin-top:16px">💡 Active timesheets require update before Friday 6 PM IST each week. Approval by Satya R. (VP Engineering).</div>
       </div>
       <div class="card">
-        <div class="sec-title" style="margin-bottom:14px">Project Hour Allocation</div>
+        <div class="sec-title" style="margin-bottom:12px">Project Hour Allocation</div>
         <div class="bar-row"><div class="bar-label">Cloud Infra</div><div class="bar-track"><div class="bar-fill blue" style="width:55%"></div></div><div class="bar-val">88h</div></div>
         <div class="bar-row"><div class="bar-label">Automation</div><div class="bar-track"><div class="bar-fill green" style="width:28%"></div></div><div class="bar-val">45h</div></div>
         <div class="bar-row"><div class="bar-label">Team Ops</div><div class="bar-track"><div class="bar-fill yellow" style="width:12%"></div></div><div class="bar-val">18h</div></div>
@@ -778,7 +869,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- EMPLOYEE: CHECKLISTS -->
     <div class="page" id="page-emp-checklists">
       <div class="stat-grid">
         <div class="stat-card c-yellow"><div class="stat-label">Active Checklists</div><div class="stat-value">2</div><div class="stat-sub">Require completion</div></div>
@@ -809,7 +899,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- EMPLOYEE: EXPENSES -->
     <div class="page" id="page-emp-expenses">
       <div class="stat-grid">
         <div class="stat-card c-blue"><div class="stat-label">Submitted (MTD)</div><div class="stat-value">₹12,400</div><div class="stat-sub">3 claims this month</div></div>
@@ -845,7 +934,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- EMPLOYEE: PERFORMANCE REVIEWS & GOALS -->
     <div class="page" id="page-emp-performance">
       <div class="stat-grid">
         <div class="stat-card c-blue"><div class="stat-label">Overall Rating</div><div class="stat-value">4.2/5</div><div class="stat-sub">Exceeds Expectations</div></div>
@@ -888,7 +976,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- EMPLOYEE: E-SIGNATURES -->
     <div class="page" id="page-emp-esignatures">
       <div class="stat-grid">
         <div class="stat-card c-red"><div class="stat-label">Pending Signatures</div><div class="stat-value">3</div><div class="stat-sub">Action required</div></div>
@@ -913,7 +1000,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- EMPLOYEE: PINBOARD -->
     <div class="page" id="page-emp-pinboard">
       <div class="sec-head" style="margin-bottom:0">
         <div><div class="sec-title" style="font-size:16px">📌 My Pinboard</div><div class="sec-sub">Personal notes, links, and team announcements you've pinned</div></div>
@@ -929,7 +1015,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- EMPLOYEE: ASSETS -->
     <div class="page" id="page-emp-assets">
       <div class="stat-grid">
         <div class="stat-card c-blue"><div class="stat-label">Assets Assigned</div><div class="stat-value">4</div><div class="stat-sub">Active devices & access</div></div>
@@ -939,9 +1024,9 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
       <div class="card">
         <div class="sec-head"><div><div class="sec-title">🖥️ Assets In Your Care</div><div class="sec-sub">IT-assigned company property</div></div><button class="sec-action" onclick="showToast('Raising IT support ticket…','blue')">Request New Asset</button></div>
-        <div class="asset-item"><div class="asset-icon">💻</div><div class="asset-info"><div class="asset-name">Dell XPS 15 9530 — Corporate Laptop</div><div class="asset-id">FF5454333 · Issued Jan 15, 2023</div></div><div style="text-align:right"><span class="pill active-p">Active</span><div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:3px">N/A</div></div></div>
-        <div class="asset-item"><div class="asset-icon">📱</div><div class="asset-info"><div class="asset-name">Samsung Galaxy S24 — Work Phone</div><div class="asset-id">GT55543 · Issued Oct 05, 2024</div></div><div style="text-align:right"><span class="pill active-p">Active</span><div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:3px">N/A</div></div></div>
-        <div class="asset-item"><div class="asset-icon">🏢</div><div class="asset-info"><div class="asset-name">Hyderabad Office Building Access Card</div><div class="asset-id">GT22891 · Issued Jan 15, 2019</div></div><div style="text-align:right"><span class="pill active-p">Active</span><div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:3px">N/A</div></div></div>
+        <div class="asset-item"><div class="asset-icon">💻</div><div class="asset-info"><div class="asset-name">Dell XPS 15 9530 — Corporate Laptop</div><div class="asset-id">FF5454333 · Issued Jan 15, 2023</div></div><div style="text-align:right"><span class="pill active-p">Active</span></div></div>
+        <div class="asset-item"><div class="asset-icon">📱</div><div class="asset-info"><div class="asset-name">Samsung Galaxy S24 — Work Phone</div><div class="asset-id">GT55543 · Issued Oct 05, 2024</div></div><div style="text-align:right"><span class="pill active-p">Active</span></div></div>
+        <div class="asset-item"><div class="asset-icon">🏢</div><div class="asset-info"><div class="asset-name">Hyderabad Office Building Access Card</div><div class="asset-id">GT22891 · Issued Jan 15, 2019</div></div><div style="text-align:right"><span class="pill active-p">Active</span></div></div>
         <div class="asset-item"><div class="asset-icon">🖥️</div><div class="asset-info"><div class="asset-name">Dell Latitude 5540 — Old Laptop</div><div class="asset-id">FF4421011 · Issued Jan 2019</div></div><div style="text-align:right"><span class="pill leave">Return Due</span><div style="font-size:10px;color:var(--red);font-family:var(--mono);margin-top:3px">Apr 1, 2026</div></div></div>
         <div class="info-box yellow">⚠️ Please return old laptop (FF4421011) to IT helpdesk before April 1, 2026. Contact: it-hyd@microsoft.com</div>
       </div>
@@ -954,7 +1039,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- EMPLOYEE: CAREER (with REFER feature) -->
     <div class="page" id="page-emp-career">
       <div class="career-hero">
         <div style="font-size:36px;margin-bottom:10px">🚀</div>
@@ -978,10 +1062,149 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
         <div class="career-stat-card" onclick="openCareers()"><div class="career-stat-num">🇮🇳 340</div><div class="career-stat-label">Roles in India</div></div>
       </div>
 
-      <!-- Referral Panel -->
+      <div class="card">
+        <div class="sec-head">
+          <div>
+            <div class="sec-title">👥 My Referred Candidates</div>
+            <div class="sec-sub">Track status of everyone you've referred · Referred by Vivek Katuri</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div class="refresh-badge"><div class="refresh-dot"></div>Live status</div>
+            <button class="btn-primary" style="font-size:11px" onclick="openReferModal('Any Open Position')">+ New Referral</button>
+          </div>
+        </div>
+
+        <div class="refer-stats-row">
+          <div class="refer-stat-mini"><div class="refer-stat-num" style="color:var(--blue)">4</div><div class="refer-stat-lbl">Total Referred</div></div>
+          <div class="refer-stat-mini"><div class="refer-stat-num" style="color:var(--yellow)">2</div><div class="refer-stat-lbl">Pending</div></div>
+          <div class="refer-stat-mini"><div class="refer-stat-num" style="color:var(--red)">1</div><div class="refer-stat-lbl">No Response</div></div>
+          <div class="refer-stat-mini"><div class="refer-stat-num" style="color:var(--green)">1</div><div class="refer-stat-lbl">In Process</div></div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="refer-cand-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Candidate</th>
+                <th>Role Applied</th>
+                <th>Referred On</th>
+                <th>Last Follow-up</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="color:var(--text3);font-family:var(--mono)">01</td>
+                <td>
+                  <div class="emp-cell">
+                    <div class="emp-av av-a" style="width:32px;height:32px;font-size:10px">SBK</div>
+                    <div>
+                      <div class="cand-name">Sai Babu Kola</div>
+                      <div class="cand-id">saibabukola01@gmail.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div style="font-size:12px;font-weight:600;color:var(--text)">NOC Analyst</div>
+                  <div style="font-size:10px;color:var(--text3);font-family:var(--mono)">Network Operations · L1</div>
+                </td>
+                <td style="font-family:var(--mono);font-size:11px;color:var(--text2)">08/04/2026</td>
+                <td>
+                  <div style="font-family:var(--mono);font-size:11px;color:var(--text2)">10/04/2026</div>
+                  <div class="status-note warn">⚠️ Person did not lift call</div>
+                </td>
+                <td><span class="pill noresponse">No Response</span></td>
+                <td><button class="follow-btn" onclick="openFollowup('Sai Babu Kola')">Follow Up</button></td>
+              </tr>
+
+              <tr>
+                <td style="color:var(--text3);font-family:var(--mono)">02</td>
+                <td>
+                  <div class="emp-cell">
+                    <div class="emp-av av-b" style="width:32px;height:32px;font-size:10px">SK</div>
+                    <div>
+                      <div class="cand-name">Suresh Krishna</div>
+                      <div class="cand-id">sureshtondapu3@gmail.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div style="font-size:12px;font-weight:600;color:var(--text)">QA Engineer</div>
+                  <div style="font-size:10px;color:var(--text3);font-family:var(--mono)">Quality Assurance · L3</div>
+                </td>
+                <td style="font-family:var(--mono);font-size:11px;color:var(--text2)">08/04/2026</td>
+                <td>
+                  <div style="font-family:var(--mono);font-size:11px;color:var(--text2)">—</div>
+                  <div class="status-note">Awaiting HR screening call</div>
+                </td>
+                <td><span class="pill pending">Pending</span></td>
+                <td><button class="follow-btn" onclick="openFollowup('Suresh Krishna')">Follow Up</button></td>
+              </tr>
+
+              <tr>
+                <td style="color:var(--text3);font-family:var(--mono)">03</td>
+                <td>
+                  <div class="emp-cell">
+                    <div class="emp-av av-c" style="width:32px;height:32px;font-size:10px">SS</div>
+                    <div>
+                      <div class="cand-name">Sai Sandeep</div>
+                      <div class="cand-id">saisandeep@gmail.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div style="font-size:12px;font-weight:600;color:var(--text)">Linux Engineer</div>
+                  <div style="font-size:10px;color:var(--text3);font-family:var(--mono)">Infrastructure · L4</div>
+                </td>
+                <td style="font-family:var(--mono);font-size:11px;color:var(--text2)">09/04/2026</td>
+                <td>
+                  <div style="font-family:var(--mono);font-size:11px;color:var(--text2)">—</div>
+                  <div class="status-note">Resume under review</div>
+                </td>
+                <td><span class="pill pending">Pending</span></td>
+                <td><button class="follow-btn" onclick="openFollowup('Sai Sandeep')">Follow Up</button></td>
+              </tr>
+
+              <tr>
+                <td style="color:var(--text3);font-family:var(--mono)">04</td>
+                <td>
+                  <div class="emp-cell">
+                    <div class="emp-av av-d" style="width:32px;height:32px;font-size:10px">AS</div>
+                    <div>
+                      <div class="cand-name">Aditya Sharma</div>
+                      <div class="cand-id">aditya.sharma@gmail.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <div style="font-size:12px;font-weight:600;color:var(--text)">SDE III — DevOps</div>
+                  <div style="font-size:10px;color:var(--text3);font-family:var(--mono)">Site Reliability · L5</div>
+                </td>
+                <td style="font-family:var(--mono);font-size:11px;color:var(--text2)">18/03/2026</td>
+                <td>
+                  <div style="font-family:var(--mono);font-size:11px;color:var(--text2)">05/04/2026</div>
+                  <div class="status-note ok">✓ Technical Round 1 cleared</div>
+                </td>
+                <td><span class="pill inprog">In Process</span></td>
+                <td><button class="follow-btn" onclick="showToast('Aditya in Technical Round 2 — no action needed yet','blue')">Track</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="info-box yellow" style="margin-top:14px">
+          ⚠️ <strong style="color:var(--text)">Sai Babu Kola</strong> did not answer the HR call on 10/04/2026. Please reach out personally and ask them to check their email/phone for an HR callback request.
+        </div>
+        <div class="info-box green" style="margin-top:8px">
+          🎁 Referral bonus: <strong style="color:var(--green)">₹50,000</strong> per successful hire · 2 successful referrals this year · ₹1,00,000 earned.
+        </div>
+      </div>
+
       <div class="referral-panel">
-        <div class="referral-panel-title">👥 Employee Referral Program</div>
-        <div class="referral-panel-sub">Know someone great? Refer them directly from here — your referrals jump the queue and you earn ₹50,000 if they get hired and complete 90 days.</div>
+        <div class="referral-panel-title">➕ Refer Someone New</div>
+        <div class="referral-panel-sub">Know someone great? Quick-refer them below or click "Add More Details" for a full referral form.</div>
         <div class="refer-form-grid">
           <div class="fgroup" style="margin-bottom:0"><label class="flabel">Referral's Name</label><div class="input-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><input class="finput" type="text" placeholder="Full name" id="quick-refer-name"/></div></div>
           <div class="fgroup" style="margin-bottom:0"><label class="flabel">Referral's Email</label><div class="input-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><input class="finput" type="email" placeholder="email@company.com" id="quick-refer-email"/></div></div>
@@ -990,12 +1213,11 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
           <button class="btn-primary" style="font-size:12px" onclick="submitQuickReferral()">Submit Referral →</button>
           <button class="btn-secondary" style="font-size:12px" onclick="openReferModal('Any Open Position')">Add More Details</button>
         </div>
-        <div class="info-box green" style="margin-top:12px">🎁 Your referral bonus history: <strong style="color:var(--green)">2 successful referrals · ₹1,00,000 earned this year</strong></div>
       </div>
 
       <div class="card">
         <div class="sec-head">
-          <div><div class="sec-title">Featured Open Roles</div><div class="sec-sub">Curated for your profile · Click "Apply Now" to apply or "Refer" to refer someone</div></div>
+          <div><div class="sec-title">Featured Open Roles</div><div class="sec-sub">Curated for your profile · Click "Apply Now" or "Refer" someone</div></div>
           <a href="https://careers.microsoft.com/v2/global/en/home.html" target="_blank" rel="noopener noreferrer" class="sec-action">View all →</a>
         </div>
         <div class="career-filters">
@@ -1016,7 +1238,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- EMPLOYEE: PROFILE -->
     <div class="page" id="page-emp-profile">
       <div class="profile-hero">
         <div class="profile-av">VK</div>
@@ -1058,7 +1279,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- EMPLOYEE: LEAVE -->
     <div class="page" id="page-emp-leave">
       <div class="leave-bal-grid">
         <div class="leave-bal"><div class="leave-bal-num" style="color:var(--blue)">12</div><div class="leave-bal-type">Casual Leave</div></div>
@@ -1088,7 +1308,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- EMPLOYEE: PAYROLL -->
     <div class="page" id="page-emp-payroll">
       <div class="stat-grid">
         <div class="stat-card c-green"><div class="stat-label">Gross Salary</div><div class="stat-value">₹2.86L</div><div class="stat-sub">Basic + HRA + Allowances</div></div>
@@ -1122,7 +1341,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- EMPLOYEE: ATTENDANCE -->
     <div class="page" id="page-emp-attendance">
       <div class="stat-grid">
         <div class="stat-card c-green"><div class="stat-label">Days Present</div><div class="stat-value">22</div><div class="stat-sub">March 2026</div></div>
@@ -1143,7 +1361,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- HR: DASHBOARD -->
     <div class="page" id="page-hr-dashboard">
       <div class="stat-grid">
         <div class="stat-card c-blue"><div class="stat-label">Total Employees</div><div class="stat-value">10,234</div><div class="stat-sub"><span class="delta up">↑ 2.4%</span> vs last quarter</div></div>
@@ -1194,7 +1411,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- HR: RECRUITMENT -->
     <div class="page" id="page-hr-recruitment">
       <div class="stat-grid">
         <div class="stat-card c-blue"><div class="stat-label">Open Positions</div><div class="stat-value">28</div><div class="stat-sub">Across all regions</div></div>
@@ -1205,21 +1421,9 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       <div class="two-col">
         <div class="card">
           <div class="sec-head"><div><div class="sec-title">🎯 Active Candidates</div><div class="sec-sub">Tracking pipeline</div></div><button class="btn-primary" style="font-size:11px" onclick="showToast('Opening ATS system…','blue')">Open Full ATS</button></div>
-          <div class="recruit-card">
-            <div class="recruit-header"><div><div class="recruit-name">Aditya Sharma</div><div class="recruit-role">Applied: SDE III — DevOps · Referral: Vivek Katuri</div></div><span class="pill inprog">Interview</span></div>
-            <div class="recruit-steps"><div class="recruit-step done"></div><div class="recruit-step done"></div><div class="recruit-step active"></div><div class="recruit-step"></div><div class="recruit-step"></div></div>
-            <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:6px">Applied → Screened → Technical Round 1 → Technical Round 2 → Offer</div>
-          </div>
-          <div class="recruit-card">
-            <div class="recruit-header"><div><div class="recruit-name">Sneha Krishnamurthy</div><div class="recruit-role">Applied: Cloud Architect L6 · Direct</div></div><span class="pill pending">Screening</span></div>
-            <div class="recruit-steps"><div class="recruit-step done"></div><div class="recruit-step active"></div><div class="recruit-step"></div><div class="recruit-step"></div><div class="recruit-step"></div></div>
-            <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:6px">Applied → Screened → Technical → Behavioral → Offer</div>
-          </div>
-          <div class="recruit-card">
-            <div class="recruit-header"><div><div class="recruit-name">Rahul Verma</div><div class="recruit-role">Applied: AI/ML Engineer L7 · Referral: Priya Reddy</div></div><span class="pill leave">Offer Sent</span></div>
-            <div class="recruit-steps"><div class="recruit-step done"></div><div class="recruit-step done"></div><div class="recruit-step done"></div><div class="recruit-step done"></div><div class="recruit-step active"></div></div>
-            <div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:6px">All rounds complete · Offer package sent · Awaiting response</div>
-          </div>
+          <div class="recruit-card"><div class="recruit-header"><div><div class="recruit-name">Aditya Sharma</div><div class="recruit-role">Applied: SDE III — DevOps · Referral: Vivek Katuri</div></div><span class="pill inprog">Interview</span></div><div class="recruit-steps"><div class="recruit-step done"></div><div class="recruit-step done"></div><div class="recruit-step active"></div><div class="recruit-step"></div><div class="recruit-step"></div></div><div style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:6px">Applied → Screened → Technical Round 1 → Technical Round 2 → Offer</div></div>
+          <div class="recruit-card"><div class="recruit-header"><div><div class="recruit-name">Sneha Krishnamurthy</div><div class="recruit-role">Applied: Cloud Architect L6 · Direct</div></div><span class="pill pending">Screening</span></div><div class="recruit-steps"><div class="recruit-step done"></div><div class="recruit-step active"></div><div class="recruit-step"></div><div class="recruit-step"></div><div class="recruit-step"></div></div></div>
+          <div class="recruit-card"><div class="recruit-header"><div><div class="recruit-name">Sai Babu Kola</div><div class="recruit-role">Applied: NOC Analyst · Referral: Vivek Katuri</div></div><span class="pill noresponse">No Response</span></div><div class="recruit-steps"><div class="recruit-step done"></div><div class="recruit-step"></div><div class="recruit-step"></div><div class="recruit-step"></div><div class="recruit-step"></div></div><div style="font-size:10px;color:var(--red);font-family:var(--mono);margin-top:6px">⚠️ HR call on 10/04/2026 — candidate did not pick up</div></div>
         </div>
         <div class="card">
           <div class="sec-title" style="margin-bottom:14px">Referral Summary</div>
@@ -1232,7 +1436,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- HR: EMPLOYEES -->
     <div class="page" id="page-hr-employees">
       <div class="search-bar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" placeholder="Search by name, ID, location, department…" id="emp-search" oninput="filterEmp()"/></div>
       <div class="card">
@@ -1249,7 +1452,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- HR: PAYROLL -->
     <div class="page" id="page-hr-payroll">
       <div class="stat-grid">
         <div class="stat-card c-blue"><div class="stat-label">India Payroll</div><div class="stat-value">₹8.2Cr</div><div class="stat-sub">PF · ESI · TDS</div></div>
@@ -1280,7 +1482,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- HR: ATTENDANCE -->
     <div class="page" id="page-hr-attendance">
       <div class="stat-grid">
         <div class="stat-card c-blue"><div class="stat-label">Checked In</div><div class="stat-value">8,741</div><div class="stat-sub">All regions</div></div>
@@ -1299,7 +1500,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- HR: SECURITY -->
     <div class="page" id="page-hr-security">
       <div class="two-col">
         <div class="card">
@@ -1320,7 +1520,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- HR: ORG CHART -->
     <div class="page" id="page-hr-org">
       <div class="card">
         <div class="sec-title" style="margin-bottom:4px">Organization Hierarchy</div>
@@ -1352,7 +1551,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- HR: REGIONS -->
     <div class="page" id="page-hr-regions">
       <div class="card">
         <div class="sec-title" style="margin-bottom:14px">Global Office Locations</div>
@@ -1381,7 +1579,6 @@ tbody tr:hover td{background:rgba(14,165,233,0.03);color:var(--text);}
       </div>
     </div>
 
-    <!-- HR: REPORTS -->
     <div class="page" id="page-hr-reports">
       <div class="two-col">
         <div class="card">
@@ -1519,7 +1716,7 @@ function buildSidebar(role){
 const META={
   'emp-dashboard':{title:'Dashboard',sub:'Good morning, Vivek 👋'},
   'emp-profile':{title:'My Profile',sub:'MS-IND-HYD-10234'},
-  'emp-tasks':{title:'My Tasks',sub:'7 assigned · 2 overdue'},
+  'emp-tasks':{title:'My Tasks & Career Path',sub:'7 assigned · 2 overdue'},
   'emp-timesheets':{title:'Timesheets',sub:'Week of Mar 24–28, 2026'},
   'emp-checklists':{title:'Checklists',sub:'2 active · 3 overdue items'},
   'emp-performance':{title:'Performance & Goals',sub:'FY 2025-26 · Self-assessment due Apr 5'},
@@ -1530,7 +1727,7 @@ const META={
   'emp-esignatures':{title:'e-Signatures',sub:'3 pending signatures'},
   'emp-assets':{title:'Assets & Documents',sub:'IT assigned · Position history'},
   'emp-pinboard':{title:'My Pinboard',sub:'Personal workspace'},
-  'emp-career':{title:'Careers & Referrals',sub:'Powered by Microsoft Careers Portal'},
+  'emp-career':{title:'Careers & Referrals',sub:'4 referred · Track your candidates'},
   'hr-dashboard':{title:'HR Dashboard',sub:'Good morning, Preethi 👋'},
   'hr-employees':{title:'Employee Directory',sub:'10,234 employees · 5 regions'},
   'hr-org':{title:'Org Chart',sub:'Global hierarchy'},
@@ -1567,40 +1764,36 @@ function doLogout(){
   setRole('employee');
 }
 
-// ─── TASK COMPLETION (FIXED) ───
-// When task is checked: mark as completed (strikethrough), change pill to "Done", remove overdue if applicable
-function completeTask(el, taskId){
+// TASK COMPLETION
+function completeTask(el,taskId){
   el.classList.toggle('checked');
-  const taskItem = document.getElementById('task-'+taskId);
-  const pill = document.getElementById('pill-'+taskId);
+  const taskItem=document.getElementById('task-'+taskId);
+  const pill=document.getElementById('pill-'+taskId);
   if(el.classList.contains('checked')){
-    // Mark completed
     taskItem.classList.add('completed');
     if(pill){
-      const wasOverdue = pill.classList.contains('critical');
+      const wasOverdue=pill.classList.contains('critical');
       pill.className='pill done task-pill';
       pill.textContent='Done';
-      if(wasOverdue && overdueCount>0){
+      if(wasOverdue&&overdueCount>0){
         overdueCount--;
         const oc=document.getElementById('tasks-overdue-count');
-        if(oc) oc.textContent=overdueCount;
+        if(oc)oc.textContent=overdueCount;
         const sb=document.getElementById('sb-overdue-badge');
-        if(sb) sb.textContent=overdueCount;
+        if(sb)sb.textContent=overdueCount;
       }
     }
     completedCount++;
     const cc=document.getElementById('completed-count');
-    if(cc) cc.textContent=completedCount;
+    if(cc)cc.textContent=completedCount;
     showToast('Task marked as complete ✓','green');
   }else{
-    // Uncheck — restore
     taskItem.classList.remove('completed');
     showToast('Task marked as pending','yellow');
   }
 }
 
-// Dashboard task check (simpler version)
-function dashCheck(el, itemId, originalPill){
+function dashCheck(el,itemId,originalPill){
   el.classList.toggle('checked');
   const taskItem=document.getElementById(itemId);
   const pill=document.getElementById(itemId+'-pill');
@@ -1614,8 +1807,8 @@ function dashCheck(el, itemId, originalPill){
   }
 }
 
-// ─── CHECKLIST ───
-function checklistToggle(el, itemId){
+// CHECKLIST
+function checklistToggle(el,itemId){
   el.classList.toggle('checked');
   const item=document.getElementById(itemId);
   if(el.classList.contains('checked')){
@@ -1626,42 +1819,12 @@ function checklistToggle(el, itemId){
   }
 }
 
-// ─── RESUME UPLOAD ───
-function handleResumeUpload(input){
-  const file=input.files[0];
-  if(!file)return;
-  processResumeFile(file);
-}
-function handleResumeDrop(e){
-  e.preventDefault();
-  document.getElementById('resume-drop-zone').classList.remove('dragover');
-  const file=e.dataTransfer.files[0];
-  if(file) processResumeFile(file);
-}
-function processResumeFile(file){
-  const allowed=['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-  if(!allowed.includes(file.type)&&!file.name.match(/\.(pdf|doc|docx)$/i)){showToast('Only PDF, DOC, DOCX files allowed','red');return;}
-  if(file.size>5*1024*1024){showToast('File too large — max 5MB','red');return;}
-  const sizeStr=file.size>1024*1024?(file.size/(1024*1024)).toFixed(1)+' MB':(file.size/1024).toFixed(0)+' KB';
-  document.getElementById('resume-file-name').textContent=file.name;
-  document.getElementById('resume-file-size').textContent=sizeStr+' · Uploaded today';
-  document.getElementById('resume-file-display').classList.add('show');
-  document.getElementById('resume-drop-zone').style.display='none';
-  showToast('Resume uploaded & linked to tasks ✓','green');
-}
-function removeResume(){
-  document.getElementById('resume-file-display').classList.remove('show');
-  document.getElementById('resume-drop-zone').style.display='';
-  document.getElementById('resume-file-input').value='';
-  showToast('Resume removed','blue');
-}
-
-// ─── TASK REFRESH ───
+// TASK DATE
 function updateTasksDate(){
   const now=new Date();
   const opts={weekday:'long',year:'numeric',month:'long',day:'numeric'};
   const label=document.getElementById('tasks-date-label');
-  if(label) label.textContent=now.toLocaleDateString('en-IN',opts);
+  if(label)label.textContent=now.toLocaleDateString('en-IN',opts);
 }
 function refreshTasks(){
   showToast('Tasks synced from team board','blue');
@@ -1670,7 +1833,7 @@ function refreshTasks(){
   if(list){list.style.opacity='0.5';setTimeout(()=>{list.style.opacity='1';},400);}
 }
 
-// ─── CAREER ───
+// CAREER
 function openCareers(){
   window.open('https://careers.microsoft.com/v2/global/en/home.html','_blank','noopener,noreferrer');
 }
@@ -1682,7 +1845,7 @@ function filterCareer(btn,cat){
   });
 }
 
-// ─── REFERRAL MODAL ───
+// REFERRAL MODAL
 function openReferModal(roleName){
   document.getElementById('refer-modal-role').textContent='Referring someone for: '+roleName;
   document.getElementById('refer-modal').classList.add('show');
@@ -1722,6 +1885,18 @@ function submitSignature(){
   showToast('Document signed successfully ✓ — legally binding','green');
 }
 
+// ─── FOLLOW-UP ───
+function openFollowup(name){
+  document.getElementById('followup-candidate-name').textContent='Candidate: ' + name;
+  document.getElementById('followup-modal').classList.add('show');
+}
+function submitFollowup(){
+  const notes = document.getElementById('followup-notes').value;
+  if(!notes) {showToast('Please enter notes', 'red'); return;}
+  closeModal('followup-modal');
+  showToast('Follow-up logged successfully', 'green');
+}
+
 // ─── APPROVAL ───
 function approveItem(btn){
   const item=btn.closest('.approval-item');
@@ -1735,6 +1910,14 @@ function filterEmp(){
   const q=document.getElementById('emp-search').value.toLowerCase();
   document.querySelectorAll('#emp-table tbody tr').forEach(r=>{
     r.style.display=r.textContent.toLowerCase().includes(q)?'':'none';
+  });
+}
+
+// ─── LOCAL TASK FILTER ───
+function filterLocalTasks() {
+  const q = document.getElementById('task-filter-input').value.toLowerCase();
+  document.querySelectorAll('#tasks-list .task-item').forEach(task => {
+    task.style.display = task.textContent.toLowerCase().includes(q) ? 'flex' : 'none';
   });
 }
 
@@ -1760,8 +1943,9 @@ function showToast(msg,color){
 // ─── CLOCK (IST) ───
 function tick(){
   const now=new Date();
-  const ist=new Date(now.getTime()+5.5*60*60*1000);
-  const h=ist.getUTCHours(),m=ist.getUTCMinutes(),s=ist.getUTCSeconds();
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+  const ist = new Date(utc + (3600000 * 5.5));
+  const h=ist.getHours(),m=ist.getMinutes(),s=ist.getSeconds();
   const ampm=h>=12?'PM':'AM';const h12=h%12||12;
   document.getElementById('clock').textContent=`${String(h12).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} ${ampm} IST`;
 }
