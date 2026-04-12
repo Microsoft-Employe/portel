@@ -1659,18 +1659,27 @@ function doLogin(){
 }
 
 function launchApp(user){
-  document.getElementById('sb-name').textContent=user.name;
-  document.getElementById('sb-role').textContent=user.title;
-  document.getElementById('sb-av').textContent=user.initials;
-  document.getElementById('sign-user-name').textContent=user.name;
-  const chip=document.getElementById('tb-chip');
-  chip.textContent=user.role==='hr'?'HR Admin':'Employee';
-  chip.className='tb-chip '+(user.role==='hr'?'hr':'emp');
-  buildSidebar(user.role);
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('app-shell').classList.add('show');
-  goPage(user.defaultPage);
-  updateTasksDate();
+    document.getElementById('sb-name').textContent=user.name;
+    document.getElementById('sb-role').textContent=user.title;
+    document.getElementById('sb-av').textContent=user.initials;
+    document.getElementById('sign-user-name').textContent=user.name;
+    
+    const chip=document.getElementById('tb-chip');
+    chip.textContent=user.role==='hr'?'HR Admin':'Employee';
+    chip.className='tb-chip '+(user.role==='hr'?'hr':'emp');
+    
+    // Auto-update HR Dashboard Count upon login
+    if(user.role === 'hr') {
+        const totalPresent = document.querySelector('#page-hr-dashboard .stat-card.c-green .stat-value');
+        if(totalPresent) totalPresent.textContent = "8,742"; // Incremented from 8,741
+    }
+
+    buildSidebar(user.role);
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app-shell').classList.add('show');
+    goPage(user.defaultPage);
+    updateTasksDate();
+    tick(); // Run immediately on login
 }
 
 function buildSidebar(role){
@@ -1942,12 +1951,43 @@ function showToast(msg,color){
 
 // ─── CLOCK (IST) ───
 function tick(){
-  const now=new Date();
-  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-  const ist = new Date(utc + (3600000 * 5.5));
-  const h=ist.getHours(),m=ist.getMinutes(),s=ist.getSeconds();
-  const ampm=h>=12?'PM':'AM';const h12=h%12||12;
-  document.getElementById('clock').textContent=`${String(h12).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} ${ampm} IST`;
+    const now = new Date();
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const ist = new Date(utc + (3600000 * 5.5));
+    const h=ist.getHours(),m=ist.getMinutes(),s=ist.getSeconds();
+    const ampm=h>=12?'PM':'AM';const h12=h%12||12;
+    
+    // 1. Update Top Bar Clock
+    const clockEl = document.getElementById('clock');
+    if(clockEl) clockEl.textContent=`${String(h12).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} ${ampm} IST`;
+
+    // 2. AUTO-CALCULATE HOURS (Assume check-in at 9:00 AM IST)
+    const checkIn = new Date(ist);
+    checkIn.setHours(9, 0, 0, 0); 
+
+    if (ist >= checkIn) {
+        const diff = ist - checkIn;
+        const diffHrs = Math.floor(diff / 3600000);
+        const diffMins = Math.floor((diff % 3600000) / 60000);
+        const timeStr = `${diffHrs}h ${diffMins}m`;
+
+        // Update Dashboard Stat Card
+        const dashAttend = document.querySelector('#page-emp-dashboard .stat-card.c-purple .stat-value');
+        if(dashAttend) dashAttend.textContent = "Present";
+
+        // Update Timesheet "Today" cell
+        const tsToday = document.querySelector('.ts-today .ts-day-hrs');
+        if(tsToday) tsToday.textContent = timeStr;
+
+        // Update Attendance Page Table (First Row)
+        const rowHrs = document.querySelector('#page-emp-attendance table tbody tr:first-child td:nth-child(4)');
+        const rowStat = document.querySelector('#page-emp-attendance table tbody tr:first-child td:nth-child(6) .pill');
+        if(rowHrs) rowHrs.textContent = timeStr;
+        if(rowStat) {
+            rowStat.className = "pill present";
+            rowStat.textContent = "Present";
+        }
+    }
 }
 tick();setInterval(tick,1000);
 
